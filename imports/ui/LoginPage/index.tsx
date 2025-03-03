@@ -1,117 +1,53 @@
-import { checkStrEmpty, emailRegex } from "@netsu/js-utils";
-import { Button, Input, message, Space, Typography } from "antd";
-import { Meteor } from "meteor/meteor";
-import React, { useState } from "react";
-import { MethodSetUserCreateModel } from "/imports/api/users/models";
-import { errorResponse } from "/imports/utils/errors";
-import { clientContentError } from "/imports/utils/serverErrors";
+import { emailRegex } from '@netsu/js-utils';
+import { Button, Input, message, Space, Typography } from 'antd';
+import { Meteor } from 'meteor/meteor';
+import React, { useState } from 'react';
+import { errorResponse } from '/imports/utils/errors';
 
 const LoginPage: React.FC = () => {
-	const [showLogin, setShowLogin] = useState(true);
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    // display loader while logging in
+    const [loggingIn, setLoggingIn] = useState(false);
 
-	const handleLogin = async () => {
-		if (checkStrEmpty([email, password])) {
-			return message.error("All fields are required");
-		}
+    const handleSubmit = async () => {
+        const cleanedEmail = email.trim();
 
-		if (password.length < 8) {
-			return message.error("Password is too short");
-		}
+        if (!emailRegex.test(cleanedEmail)) {
+            return message.error('Email is invalid');
+        }
 
-		if (!emailRegex.test(email)) {
-			return clientContentError("Email is invalid");
-		}
+        if (password.length < 8) {
+            return message.error('Password is too short');
+        }
 
-		Meteor.loginWithPassword(email, password, (err: Meteor.Error) => {
-			if (err) {
-				return errorResponse(err, "Could not log in");
-			}
-		});
-	};
+        setLoggingIn(true);
 
-	const handleSignUp = async () => {
-		if (checkStrEmpty([email, firstName, lastName, password])) {
-			return message.error("All fields are required");
-		}
+        Meteor.loginWithPassword(cleanedEmail, password, (error: Meteor.Error) => {
+            setLoggingIn(false);
 
-		if (password.length < 8) {
-			return message.error("Password is too short");
-		}
+            if (error) {
+                return errorResponse(error, 'Could not log in');
+            }
+        });
+    };
 
-		if (!emailRegex.test(email)) {
-			return clientContentError("Email is invalid");
-		}
+    return (
+        <Space direction="vertical">
+            <Typography.Title level={2}>Sign in to your account</Typography.Title>
 
-		try {
-			const data: MethodSetUserCreateModel = {
-				email,
-				firstName,
-				lastName,
-				password,
-			};
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" />
+            <Input.Password value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" />
 
-			await Meteor.callAsync("set.user.create", data);
-		} catch (error) {
-			return errorResponse(error as Meteor.Error, "Could not create account");
-		}
+            <Button type="primary" onClick={handleSubmit}>
+                Log In
+            </Button>
 
-		message.success("Account created");
-
-		handleLogin();
-	};
-
-	return (
-		<Space direction="vertical">
-			{!showLogin && (
-				<>
-					<Space>
-						<Typography>First Name</Typography>
-						<Input
-							value={firstName}
-							onChange={(e) => setFirstName(e.target.value)}
-						/>
-					</Space>
-
-					<Space>
-						<Typography>Last Name</Typography>
-						<Input
-							value={lastName}
-							onChange={(e) => setLastName(e.target.value)}
-						/>
-					</Space>
-				</>
-			)}
-
-			<Space>
-				<Typography>Email</Typography>
-				<Input value={email} onChange={(e) => setEmail(e.target.value)} />
-			</Space>
-
-			<Space>
-				<Typography>Password</Typography>
-				<Input.Password
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-				/>
-			</Space>
-
-			<Space>
-				<Button onClick={showLogin ? handleLogin : handleSignUp}>
-					{showLogin ? "Login" : "Sign Up"}
-				</Button>
-				<Typography>
-					{showLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-					<Button onClick={() => setShowLogin((val) => !val)} type="link">
-						{showLogin ? "Sign Up" : "Login"}
-					</Button>
-				</Typography>
-			</Space>
-		</Space>
-	);
+            <Typography>
+                Don't have an account? <Button type="link">Create one</Button>
+            </Typography>
+        </Space>
+    );
 };
 
 export default LoginPage;

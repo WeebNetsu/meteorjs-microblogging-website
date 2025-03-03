@@ -1,3 +1,9 @@
-import { Meteor } from "meteor/meteor";
+import { Meteor } from 'meteor/meteor';
+import { currentUserAsync } from '/server/utils/meteor';
 
-Meteor.methods({});
+Meteor.methods({
+    'get.users.current': async () => {
+        const user = await currentUserAsync();
+        return user;
+    },
+});
