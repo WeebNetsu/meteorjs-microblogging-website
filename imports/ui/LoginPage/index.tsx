@@ -3,7 +3,7 @@ import { Button, Input, message, Space, Typography } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
-import { protectedRoutes, publicRoutes } from '/imports/utils/constants/routes';
+import { publicRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
 
 const LoginPage: React.FC = () => {
@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
                 return errorResponse(error, 'Could not log in');
             }
 
-            navigate(protectedRoutes.home.path);
+            navigate(publicRoutes.home.path);
         });
     };
 

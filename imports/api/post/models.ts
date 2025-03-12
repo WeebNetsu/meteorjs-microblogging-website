@@ -18,3 +18,7 @@ export default PostModel;
 export interface MethodSetPostCreateModel {
     text: string;
 }
+
+export interface MethodSetPostDeleteModel {
+    postId: string;
+}

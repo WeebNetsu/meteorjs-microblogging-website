@@ -10,6 +10,7 @@ import UserProfilePage from '/imports/ui/UserProfilePage';
  * User does not have to be logged in to view these routes
  */
 export const publicRoutes = {
+    // NOTE: Route order matters, root routes should be below their children
     login: {
         path: '/login',
         element: (<LoginPage />) as React.ReactElement,
@@ -22,13 +23,6 @@ export const publicRoutes = {
         path: '/profile/:username',
         element: (<UserProfilePage />) as React.ReactElement,
     },
-};
-
-/**
- * User has to be logged in to view these routes
- */
-export const protectedRoutes = {
-    // NOTE: Route order matters, root routes should be below their children
     home: {
         path: '/',
         element: (<BrowsePage />) as React.ReactElement,
@@ -38,6 +32,11 @@ export const protectedRoutes = {
         element: (<NotFoundPage />) as React.ReactElement,
     },
 };
+
+/**
+ * User has to be logged in to view these routes
+ */
+export const protectedRoutes = {};
 
 // NOTE: Do not add a home path here to prevent children routes from being blocked
 export const adminRoutes = {

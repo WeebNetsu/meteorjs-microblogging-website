@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import { MethodSetUserCreateModel } from '/imports/api/users/models';
-import { protectedRoutes, publicRoutes } from '/imports/utils/constants/routes';
+import { publicRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
 
 const SignupPage: React.FC = () => {
@@ -64,7 +64,7 @@ const SignupPage: React.FC = () => {
                 return errorResponse(error, 'Could not log in');
             }
 
-            navigate(protectedRoutes.home.path);
+            navigate(publicRoutes.home.path);
         });
     };
 

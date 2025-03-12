@@ -1,19 +1,20 @@
 import { DeleteOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import { formatToHumanDate } from '@netsu/js-utils';
-import { Avatar, Button, Card, Space, Typography } from 'antd';
+import { Avatar, Button, Card, message, Popconfirm, Space, Typography } from 'antd';
 import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { useMemo } from 'react';
 import { useLocation } from 'wouter';
-import { MiniBrowsePagePostModel, MiniBrowsePageUserProfileModel } from '../..';
-import PostModel from '/imports/api/post/models';
+import { FetchDataType, MiniBrowsePagePostModel, MiniBrowsePageUserProfileModel } from '../..';
+import PostModel, { MethodSetPostDeleteModel } from '/imports/api/post/models';
 import {
     MethodPublishPostLikeTotalLikesModel,
     MethodPublishPostLikeUserLikedModel,
     MethodSetPostLikeLikeOrUnlikeModel,
 } from '/imports/api/postLike/models';
 import PostLikeCollection from '/imports/api/postLike/postLike';
+import { AvailableUserRoles } from '/imports/api/roles/models';
 import { AppUserIdModel } from '/imports/ui/App';
 import { publicRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
@@ -22,14 +23,14 @@ interface PostCardProps {
     post: MiniBrowsePagePostModel;
     userId?: AppUserIdModel;
     postUser: MiniBrowsePageUserProfileModel;
+    userRoles: AvailableUserRoles[] | undefined;
+    fetchParentData: FetchDataType;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser, userRoles, fetchParentData }) => {
     const [location, navigate] = useLocation();
 
     const loadingLikes = useTracker(() => {
-        // Note that this subscription will get cleaned up
-        // when your component is unmounted or deps change.
         const totalLikeData: MethodPublishPostLikeTotalLikesModel = {
             postId: post._id,
         };
@@ -46,6 +47,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser }) => {
 
         return !(loadingUserLike?.ready() ?? true) || !loadingTotalLikes.ready();
     }, [post._id]);
+
     const postLikes: number | undefined = useTracker(() => {
         const res = PostLikeCollection.find({ postId: post._id }).count();
         return res;
@@ -58,6 +60,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser }) => {
     const handleLikeOrUnlikePost = useMemo(
         () =>
             _.debounce(async () => {
+                if (!userId) {
+                    return message.info('You need to login to like posts');
+                }
+
                 try {
                     const data: MethodSetPostLikeLikeOrUnlikeModel = {
                         postId: post._id,
@@ -71,6 +77,21 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser }) => {
         [],
     );
 
+    const handleDeletePost = async () => {
+        try {
+            const data: MethodSetPostDeleteModel = {
+                postId: post._id,
+            };
+
+            await Meteor.callAsync('set.post.delete', data);
+
+            message.success('Post Deleted');
+            fetchParentData(true);
+        } catch (error) {
+            errorResponse(error as Meteor.Error, 'Could not delete post');
+        }
+    };
+
     const postActions = [
         <Button type="text" onClick={handleLikeOrUnlikePost}>
             {loadingLikes ? (
@@ -83,8 +104,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser }) => {
         </Button>,
     ];
 
-    if (postUser.userId === userId) {
-        postActions.push(<DeleteOutlined />);
+    if (
+        postUser.userId === userId ||
+        userRoles?.includes(AvailableUserRoles.ADMIN) ||
+        userRoles?.includes(AvailableUserRoles.MODERATOR)
+    ) {
+        postActions.push(
+            <Popconfirm title="Are you sure you want to DELETE this post?" onConfirm={handleDeletePost}>
+                <Button type="text" danger>
+                    <DeleteOutlined />
+                </Button>
+            </Popconfirm>,
+        );
     }
 
     return (

@@ -2,6 +2,20 @@
 
 This will become my Meteor.js course.
 
+## Settings.json
+
+```json
+{
+    "public": {
+        "AWSRegion": "af-south-1",
+        "AWSBucket": "myapp",
+        "version": "0.6.0"
+    },
+    "AWSAccessKeyId": "xxx",
+    "AWSSecretAccessKey": "xxx"
+}
+```
+
 ---
 
 What needs to be covered
@@ -9,7 +23,7 @@ What needs to be covered
 - [x] Installing Meteor.js
 - [x] Creating a TypeScript React Meteor Project (feel free to cover some https://v2-docs.meteor.com/commandline)
 - [x] Collections
-- [ ] Allaning Roles (moderators and users - moderators can edit posts of other users)
+- [x] Allaning Roles (moderators and users - moderators can edit posts of other users)
 - [x] Startup (create dummy accounts)
 - [x] Accounts (signup/login) (optional, viewing posts can be be done by even non-logged in users)
 - [x] Method Calls

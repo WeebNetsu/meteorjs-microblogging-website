@@ -2,7 +2,7 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Space } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState } from 'react';
-import { AppUserIdModel } from '../App';
+import { BasicSiteProps } from '../App';
 import CreatePost from '../components/CreatePost';
 import PostCard from './components/PostCard';
 import PostModel from '/imports/api/post/models';
@@ -27,16 +27,14 @@ const miniBrowsePageUserProfileFields = {
     userId: 1,
 };
 
-interface BrowsePageProps {
-    userId?: AppUserIdModel;
-}
+interface BrowsePageProps extends BasicSiteProps {}
 
 /**
  * This is the general way all fetch data's are defined
  */
 export type FetchDataType = (silent?: boolean) => Promise<void>;
 
-const BrowsePage: React.FC<BrowsePageProps> = ({ userId }) => {
+const BrowsePage: React.FC<BrowsePageProps> = ({ userId, userRoles }) => {
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [loading, setLoading] = useState(true);
     const [posts, setPosts] = useState<MiniBrowsePagePostModel[]>([]);
@@ -130,7 +128,16 @@ const BrowsePage: React.FC<BrowsePageProps> = ({ userId }) => {
                 // if we don't know the post user, don't show the post
                 if (!postUser) return null;
 
-                return <PostCard key={post._id} post={post} postUser={postUser} userId={userId} />;
+                return (
+                    <PostCard
+                        fetchParentData={fetchData}
+                        userRoles={userRoles}
+                        key={post._id}
+                        post={post}
+                        postUser={postUser}
+                        userId={userId}
+                    />
+                );
             })}
         </Space>
     );

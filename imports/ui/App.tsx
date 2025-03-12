@@ -146,14 +146,6 @@ const App: React.FC = () => {
             }}
         >
             <Switch>
-                {Object.values(publicRoutes).map((route) => (
-                    <Route key={route.path} path={route.path}>
-                        <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
-                            {React.cloneElement(route.element, { userId, userProfile, userRoles })}
-                        </RouteRenderer>
-                    </Route>
-                ))}
-
                 {userRoles.includes(AvailableUserRoles.ADMIN) &&
                     Object.values(adminRoutes).map((route) => (
                         <Route key={route.path} path={route.path}>
@@ -163,7 +155,16 @@ const App: React.FC = () => {
                         </Route>
                     ))}
 
-                {Object.values(protectedRoutes).map((route) => (
+                {Object.values(protectedRoutes).map((route: any) => (
+                    <Route key={route.path} path={route.path}>
+                        <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
+                            {React.cloneElement(route.element, { userId, userProfile, userRoles })}
+                        </RouteRenderer>
+                    </Route>
+                ))}
+
+                {/* since public routes contains the home routes, they need to be placed last */}
+                {Object.values(publicRoutes).map((route) => (
                     <Route key={route.path} path={route.path}>
                         <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
                             {React.cloneElement(route.element, { userId, userProfile, userRoles })}

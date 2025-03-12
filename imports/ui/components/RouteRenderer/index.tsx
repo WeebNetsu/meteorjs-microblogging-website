@@ -10,7 +10,7 @@ import { useLocation } from 'wouter';
 import { BasicSiteProps } from '../../App';
 import { AvailableUserRoles } from '/imports/api/roles/models';
 import { SITE_NAME } from '/imports/utils/constants';
-import { adminRoutes, protectedRoutes, publicRoutes } from '/imports/utils/constants/routes';
+import { adminRoutes, publicRoutes } from '/imports/utils/constants/routes';
 
 interface RouteRendererProps extends BasicSiteProps {}
 
@@ -26,7 +26,7 @@ const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userPro
             key: 'home',
             icon: <HomeOutlined />,
             label: 'Home',
-            onClick: () => navigate(protectedRoutes.home.path),
+            onClick: () => navigate(publicRoutes.home.path),
         },
     ];
 
