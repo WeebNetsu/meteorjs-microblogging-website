@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import UserProfileCollection from '../../userProfile/userProfile';
-import { MethodSetUserCreateModel } from '../models';
+import { MethodSetUserCreateModel, UserModel } from '../models';
 import { stringContainsOnlyLettersAndNumbers } from '/imports/utils/checks';
 import { clientContentError, notFoundError } from '/imports/utils/serverErrors';
 
@@ -41,7 +41,7 @@ Meteor.methods({
         });
 
         // ensure the user was created
-        const newUser = await Meteor.users.findOneAsync({ 'emails.address': email });
+        const newUser = (await Meteor.users.findOneAsync({ 'emails.address': email })) as UserModel | undefined;
         if (!newUser) return notFoundError('new user');
 
         // create the users profile

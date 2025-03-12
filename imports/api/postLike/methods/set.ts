@@ -1,8 +1,11 @@
+import { limitText } from '@netsu/js-utils';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import PostCollection from '../../post/post';
+import { createNewSystemLogSafe } from '../../systemChangeLogs/utils';
 import PostLikeModel, { MethodSetPostLikeLikeOrUnlikeModel } from '../models';
 import PostLikeCollection from '../postLike';
+import { getUserEmail } from '/imports/utils/meteor';
 import { noAuthError, notFoundError } from '/imports/utils/serverErrors';
 import { currentUserAsync } from '/server/utils/meteor';
 
@@ -30,5 +33,17 @@ Meteor.methods({
                 createdAt: new Date(),
             });
         }
+
+        await createNewSystemLogSafe({
+            subject: `${getUserEmail(user) ?? user._id} has ${postLike ? 'unliked' : 'liked'} a post: ${limitText(post.text)}`,
+            update: postLike
+                ? `await PostLikeCollection.removeAsync(${postLike._id});`
+                : `await PostLikeCollection.insertAsync(${JSON.stringify({
+                      userId: user._id,
+                      postId: post._id,
+                      createdAt: new Date(),
+                  })});`,
+            method: 'set.postLike.likeOrUnlike',
+        });
     },
 });
