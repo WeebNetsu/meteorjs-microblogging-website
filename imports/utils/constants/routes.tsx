@@ -2,6 +2,7 @@ import React from 'react';
 import BrowsePage from '../../ui/BrowsePage';
 import LoginPage from '/imports/ui/LoginPage';
 import NotFoundPage from '/imports/ui/NotFoundPage';
+import UserProfilePage from '/imports/ui/UserProfilePage';
 
 /**
  * User does not have to be logged in to view these routes
@@ -31,6 +32,10 @@ export const publicRoutes = {
  */
 export const protectedRoutes = {
     // NOTE: Route order matters, root routes should be below their children
+    userProfile: {
+        path: '/profile/:username',
+        element: (<UserProfilePage />) as React.ReactElement,
+    },
     home: {
         path: '/',
         element: (<BrowsePage />) as React.ReactElement,

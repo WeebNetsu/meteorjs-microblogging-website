@@ -54,7 +54,7 @@ const App: React.FC = () => {
             <Switch>
                 {Object.values(protectedRoutes).map((route) => (
                     <Route key={route.path} path={route.path}>
-                        <RouteRenderer loggedIn>{React.cloneElement(route.element, { userId })}</RouteRenderer>
+                        <RouteRenderer userId={userId}>{React.cloneElement(route.element, { userId })}</RouteRenderer>
                     </Route>
                 ))}
             </Switch>
