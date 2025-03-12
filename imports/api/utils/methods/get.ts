@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import PostCollection from '../../post/post';
 import UserProfileModel from '../../userProfile/models';
 import UserProfileCollection from '../../userProfile/userProfile';
 import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '../models';
@@ -15,6 +16,7 @@ Meteor.methods({
         includeDeleted = false,
     }: MethodUtilMethodsFindCollectionModel) {
         const collectionMap = {
+            [AvailableCollectionNames.POSTS]: PostCollection,
             [AvailableCollectionNames.USER_PROFILE]: UserProfileCollection,
             [AvailableCollectionNames.USERS]: Meteor.users,
         };

@@ -1,8 +1,9 @@
 import { MethodSearchModel } from '/imports/types/interfaces';
 
 export enum AvailableCollectionNames {
+    POSTS = 'posts',
     USERS = 'users',
-    USER_PROFILE = 'user_profile',
+    USER_PROFILE = 'user_profiles',
 }
 
 export interface MethodUtilMethodsFindCollectionModel extends MethodSearchModel {

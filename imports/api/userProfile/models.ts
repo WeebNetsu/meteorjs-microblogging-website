@@ -12,6 +12,11 @@ interface UserProfileModel {
      * The last name of the user
      */
     lastName?: string;
+    /**
+     * There is a username field on the user model itself, but this feels more useful since we'll almost always
+     * access the user profile instead of user account
+     */
+    username: string;
 }
 
 export default UserProfileModel;

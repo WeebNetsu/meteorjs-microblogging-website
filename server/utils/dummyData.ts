@@ -8,6 +8,7 @@ export const createDefaultUserAccount = async () => {
         password: 'password',
         firstName: 'Admin',
         lastName: 'Account',
+        username: 'admin',
     };
 
     await Meteor.callAsync('set.user.create', data);

@@ -30,4 +30,5 @@ export interface MethodSetUserCreateModel {
     password: string;
     firstName: string;
     lastName: string | undefined;
+    username: string;
 }
