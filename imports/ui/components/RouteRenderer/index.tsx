@@ -26,7 +26,7 @@ const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userPro
             key: 'home',
             icon: <HomeOutlined />,
             label: 'Home',
-            onClick: () => navigate(publicRoutes.home.path),
+            onClick: () => navigate(protectedRoutes.home.path),
         },
     ];
 
@@ -52,9 +52,7 @@ const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userPro
                                 key: 'your-profile',
                                 icon: <ProfileOutlined />,
                                 onClick: () =>
-                                    navigate(
-                                        protectedRoutes.userProfile.path.replace(':username', userProfile.username),
-                                    ),
+                                    navigate(publicRoutes.userProfile.path.replace(':username', userProfile.username)),
                             },
                             {
                                 label: 'Logout',

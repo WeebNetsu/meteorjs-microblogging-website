@@ -146,6 +146,14 @@ const App: React.FC = () => {
             }}
         >
             <Switch>
+                {Object.values(publicRoutes).map((route) => (
+                    <Route key={route.path} path={route.path}>
+                        <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
+                            {React.cloneElement(route.element, { userId, userProfile, userRoles })}
+                        </RouteRenderer>
+                    </Route>
+                ))}
+
                 {userRoles.includes(AvailableUserRoles.ADMIN) &&
                     Object.values(adminRoutes).map((route) => (
                         <Route key={route.path} path={route.path}>

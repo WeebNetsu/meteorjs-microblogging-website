@@ -4,9 +4,18 @@ import { Button, Checkbox, Descriptions, Drawer, Input, List, Select, Space, Typ
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState } from 'react';
 import SystemChangeLogsModel from '/imports/api/systemChangeLogs/models';
+import { UserModel } from '/imports/api/users/models';
 import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '/imports/api/utils/models';
 import { MongoDBSelector } from '/imports/types/interfaces';
 import { errorResponse } from '/imports/utils/errors';
+import { getUserEmail } from '/imports/utils/meteor';
+
+interface MiniAdminLogsPageUserModel extends Pick<UserModel, '_id' | 'emails'> {}
+
+const miniAdminLogsPageUserFields = {
+    _id: 1,
+    emails: 1,
+};
 
 enum AvailableSystemLogsSearchOptions {
     SUBJECT = 'subject',
@@ -28,6 +37,37 @@ const AdminLogsPage: React.FC<AdminLogsPageProps> = () => {
         AvailableSystemLogsSearchOptions.ALL,
     );
     const [strictSearch, setStrictSearch] = useState(false);
+    const [users, setUsers] = useState<MiniAdminLogsPageUserModel[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(true);
+
+    const refreshUsers = async (userIds: string[]): Promise<MiniAdminLogsPageUserModel[]> => {
+        setLoadingUsers(true);
+        try {
+            const findData: MethodUtilMethodsFindCollectionModel = {
+                collection: AvailableCollectionNames.USERS,
+                selector: {
+                    _id: {
+                        $in: userIds,
+                    },
+                },
+                options: {
+                    fields: miniAdminLogsPageUserFields,
+                },
+            };
+
+            const res: MiniAdminLogsPageUserModel[] = await Meteor.callAsync('utilMethods.findCollection', findData);
+
+            setUsers(res);
+
+            return res;
+        } catch (error) {
+            errorResponse(error as Meteor.Error, 'Could not get users');
+        } finally {
+            setLoadingUsers(false);
+        }
+
+        return [];
+    };
 
     const refreshSystemLogs = async (skip = 0, limit = 100): Promise<SystemChangeLogsModel[]> => {
         let currentLogs: SystemChangeLogsModel[] = [];
@@ -110,7 +150,8 @@ const AdminLogsPage: React.FC<AdminLogsPageProps> = () => {
     const fetchData = async (silent = false) => {
         if (!silent) setLoading(true);
 
-        await refreshSystemLogs();
+        const logs = await refreshSystemLogs();
+        await refreshUsers(logs.map((log) => log.userId));
 
         setLoading(false);
     };
@@ -131,7 +172,7 @@ const AdminLogsPage: React.FC<AdminLogsPageProps> = () => {
 
     return (
         <Space direction="vertical" style={{ width: '100%' }}>
-            <Typography.Title level={2}>System logs</Typography.Title>
+            <Typography.Title level={2}>System Logs</Typography.Title>
 
             <Space style={{ width: '100%', justifyContent: 'center' }}>
                 <Input.Search
@@ -170,7 +211,10 @@ const AdminLogsPage: React.FC<AdminLogsPageProps> = () => {
                             </Button>,
                         ]}
                     >
-                        <List.Item.Meta title={`${formatToHumanDate(item.createdAt)}`} description={item.subject} />
+                        <List.Item.Meta
+                            title={`${formatToHumanDate(item.createdAt)} (logged by ${getUserEmail(users.find((user) => user._id === item.userId))})`}
+                            description={item.subject}
+                        />
                     </List.Item>
                 )}
                 style={{ marginBottom: '15px' }}
@@ -206,7 +250,7 @@ const AdminLogsPage: React.FC<AdminLogsPageProps> = () => {
                         </Descriptions.Item>
 
                         <Descriptions.Item label="User" span={3}>
-                            {selectedLog.userId}
+                            {getUserEmail(users.find((user) => user._id === selectedLog.userId))} ({selectedLog.userId})
                         </Descriptions.Item>
 
                         <Descriptions.Item label="Subject" span={3}>

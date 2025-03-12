@@ -3,7 +3,7 @@ import { Button, Input, message, Space, Typography } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
-import { protectedRoutes } from '/imports/utils/constants/routes';
+import { protectedRoutes, publicRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
 
 const LoginPage: React.FC = () => {
@@ -49,7 +49,10 @@ const LoginPage: React.FC = () => {
             </Button>
 
             <Typography>
-                Don't have an account? <Button type="link">Create one</Button>
+                Don't have an account?{' '}
+                <Button type="link" onClick={() => navigate(publicRoutes.signup.path)}>
+                    Create one
+                </Button>
             </Typography>
         </Space>
     );

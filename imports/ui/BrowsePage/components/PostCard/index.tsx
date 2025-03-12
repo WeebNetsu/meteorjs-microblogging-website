@@ -1,10 +1,11 @@
-import { DeleteOutlined, EditOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
+import { DeleteOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import { formatToHumanDate } from '@netsu/js-utils';
 import { Avatar, Button, Card, Space, Typography } from 'antd';
 import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { useMemo } from 'react';
+import { useLocation } from 'wouter';
 import { MiniBrowsePagePostModel, MiniBrowsePageUserProfileModel } from '../..';
 import PostModel from '/imports/api/post/models';
 import {
@@ -14,6 +15,7 @@ import {
 } from '/imports/api/postLike/models';
 import PostLikeCollection from '/imports/api/postLike/postLike';
 import { AppUserIdModel } from '/imports/ui/App';
+import { publicRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
 
 interface PostCardProps {
@@ -23,6 +25,8 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser }) => {
+    const [location, navigate] = useLocation();
+
     const loadingLikes = useTracker(() => {
         // Note that this subscription will get cleaned up
         // when your component is unmounted or deps change.
@@ -80,7 +84,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser }) => {
     ];
 
     if (postUser.userId === userId) {
-        postActions.push(<EditOutlined />, <DeleteOutlined />);
+        postActions.push(<DeleteOutlined />);
     }
 
     return (
@@ -91,7 +95,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser }) => {
                     <Space direction="vertical">
                         <Typography>{post.text}</Typography>
                         <Typography>
-                            {formatToHumanDate(post.createdAt)} By {postUser.username}
+                            {formatToHumanDate(post.createdAt)} By{' '}
+                            <Button
+                                type="link"
+                                onClick={() =>
+                                    navigate(publicRoutes.userProfile.path.replace(':username', postUser.username))
+                                }
+                            >
+                                {postUser.username}
+                            </Button>
                         </Typography>
                     </Space>
                 }

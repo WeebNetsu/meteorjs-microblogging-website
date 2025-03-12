@@ -33,7 +33,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId }) => {
             const findData: MethodUtilMethodsFindCollectionModel = {
                 collection: AvailableCollectionNames.USER_PROFILE,
                 selector: {
-                    userId,
+                    username,
                 },
                 options: {
                     fields: miniUserProfilePageUserProfileFields,

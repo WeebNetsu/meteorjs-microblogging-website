@@ -10,6 +10,6 @@ import { UserModel } from '../api/users/models';
  * @param user Meteor user model
  * @returns user email
  */
-export const getUserEmail = (user: UserModel | undefined) => {
+export const getUserEmail = (user: Pick<UserModel, 'emails'> | undefined) => {
     return _.first(user?.emails)?.address;
 };
