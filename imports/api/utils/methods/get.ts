@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import PostModel from '../../post/models';
 import PostCollection from '../../post/post';
 import PostLikeCollection from '../../postLike/postLike';
-import UserProfileModel from '../../userProfile/models';
+import SystemChangeLogsCollection from '../../systemChangeLogs/systemChangeLogs';
 import UserProfileCollection from '../../userProfile/userProfile';
 import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '../models';
 import { MongoDBSelector } from '/imports/types/interfaces';
@@ -15,10 +16,12 @@ Meteor.methods({
         selector = {},
         options = {},
         includeDeleted = false,
+        count = false,
     }: MethodUtilMethodsFindCollectionModel) {
         const collectionMap = {
             [AvailableCollectionNames.POSTS]: PostCollection,
             [AvailableCollectionNames.POST_LIKES]: PostLikeCollection,
+            [AvailableCollectionNames.SYSTEM_CHANGE_LOGS]: SystemChangeLogsCollection,
             [AvailableCollectionNames.USER_PROFILE]: UserProfileCollection,
             [AvailableCollectionNames.USERS]: Meteor.users,
         };
@@ -66,20 +69,25 @@ Meteor.methods({
         }
 
         if (onlyOne) {
-            // we specify it as UserProfileModel because TypeScript is just being a big baby an doesn't
+            // we specify it as PostModel because TypeScript is just being a big baby an doesn't
             // like to mix user model with the common folk
-            const res = await (collectionInstance as Mongo.Collection<UserProfileModel, UserProfileModel>).findOneAsync(
+            const res = await (collectionInstance as Mongo.Collection<PostModel, PostModel>).findOneAsync(
                 includeDeleted ? selector : query,
                 {
                     ...options,
                     transform: undefined,
                 },
             );
+            return res;
+        }
 
+        if (count) {
+            const res = await collectionInstance.find(includeDeleted ? selector : query, options).countAsync();
             return res;
         }
 
         const res = await collectionInstance.find(includeDeleted ? selector : query, options).fetchAsync();
+
         return res;
     },
 });

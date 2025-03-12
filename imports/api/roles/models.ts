@@ -17,7 +17,7 @@ export default RoleModel;
 // ---- GET METHOD MODELS ----
 export interface UserLinkedRoleModel {
     userId: string;
-    roles: string[];
+    roles: AvailableUserRoles[];
 }
 
 export interface MethodGetRolesUserRolesModel {

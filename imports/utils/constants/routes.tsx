@@ -1,6 +1,6 @@
 import React from 'react';
+import AdminLogsPage from '../../ui/AdminLogsPage';
 import BrowsePage from '../../ui/BrowsePage';
-import AdminAllPostsPage from '/imports/ui/AdminAllPostsPage';
 import LoginPage from '/imports/ui/LoginPage';
 import NotFoundPage from '/imports/ui/NotFoundPage';
 import UserProfilePage from '/imports/ui/UserProfilePage';
@@ -47,10 +47,10 @@ export const protectedRoutes = {
     },
 };
 
+// NOTE: Do not add a home path here to prevent children routes from being blocked
 export const adminRoutes = {
-    // NOTE: Route order matters, root routes should be below their children
-    userProfile: {
-        path: '/admin/posts',
-        element: (<AdminAllPostsPage />) as React.ReactElement,
+    logs: {
+        path: '/admin/logs',
+        element: (<AdminLogsPage />) as React.ReactElement,
     },
 };

@@ -14,4 +14,5 @@ export interface MethodUtilMethodsFindCollectionModel extends MethodSearchModel 
      * If provided, deleted documents will also be provided. If `onlyOne` is used, below will not be used.
      */
     includeDeleted?: boolean;
+    count?: boolean;
 }

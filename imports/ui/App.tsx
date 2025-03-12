@@ -4,10 +4,11 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { useEffect, useState } from 'react';
 import { Route, Switch } from 'wouter';
+import { AvailableUserRoles, MethodGetRolesUserRolesModel, ResultGetRolesUserRolesModel } from '../api/roles/models';
 import UserProfileModel from '../api/userProfile/models';
 import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '../api/utils/models';
 import { ComponentProps } from '../types/interfaces';
-import { protectedRoutes, publicRoutes } from '../utils/constants/routes';
+import { adminRoutes, protectedRoutes, publicRoutes } from '../utils/constants/routes';
 import { errorResponse } from '../utils/errors';
 import RouteRenderer from './components/RouteRenderer';
 
@@ -30,6 +31,7 @@ export type AppUserIdModel = string | undefined | null;
 export interface BasicSiteProps extends ComponentProps {
     userId?: string;
     userProfile?: MiniAppUserProfileModel;
+    userRoles?: AvailableUserRoles[];
 }
 
 const App: React.FC = () => {
@@ -39,6 +41,27 @@ const App: React.FC = () => {
      */
     const [userProfile, setUserProfile] = useState<MiniAppUserProfileModel | undefined>();
     const [loading, setLoading] = useState(true);
+    const [userRoles, setUserRoles] = useState<AvailableUserRoles[]>([]);
+
+    const fetchUserRole = async () => {
+        if (!userId) return;
+
+        try {
+            const findData: MethodGetRolesUserRolesModel = {
+                userIds: [userId],
+            };
+
+            const res: ResultGetRolesUserRolesModel = await Meteor.callAsync('get.roles.userRoles', findData);
+
+            setUserRoles(res.result.find((r) => r.userId === userId)?.roles ?? []);
+
+            return res;
+        } catch (error) {
+            errorResponse(error as Meteor.Error, 'Could not get roles');
+        }
+
+        return undefined;
+    };
 
     const fetchUserProfile = async () => {
         if (!userId) return;
@@ -73,7 +96,10 @@ const App: React.FC = () => {
     const fetchData = async (silent = false) => {
         setLoading(!silent);
 
-        if (userId) await fetchUserProfile();
+        if (userId) {
+            await fetchUserProfile();
+            await fetchUserRole();
+        }
 
         setLoading(false);
     };
@@ -120,10 +146,19 @@ const App: React.FC = () => {
             }}
         >
             <Switch>
+                {userRoles.includes(AvailableUserRoles.ADMIN) &&
+                    Object.values(adminRoutes).map((route) => (
+                        <Route key={route.path} path={route.path}>
+                            <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
+                                {React.cloneElement(route.element, { userId, userProfile, userRoles })}
+                            </RouteRenderer>
+                        </Route>
+                    ))}
+
                 {Object.values(protectedRoutes).map((route) => (
                     <Route key={route.path} path={route.path}>
-                        <RouteRenderer userId={userId} userProfile={userProfile}>
-                            {React.cloneElement(route.element, { userId, userProfile })}
+                        <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
+                            {React.cloneElement(route.element, { userId, userProfile, userRoles })}
                         </RouteRenderer>
                     </Route>
                 ))}

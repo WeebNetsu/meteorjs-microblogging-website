@@ -1,5 +1,5 @@
 /* eslint-disable react/button-has-type */
-import { HomeOutlined, LoginOutlined, LogoutOutlined, ProfileOutlined } from '@ant-design/icons';
+import { AreaChartOutlined, HomeOutlined, LoginOutlined, LogoutOutlined, ProfileOutlined } from '@ant-design/icons';
 import { limitText, removeUndefinedFromArray } from '@netsu/js-utils';
 import { Avatar, Dropdown, Layout, Menu } from 'antd';
 import { Content, Footer, Header } from 'antd/es/layout/layout';
@@ -8,8 +8,9 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { useLocation } from 'wouter';
 import { BasicSiteProps } from '../../App';
+import { AvailableUserRoles } from '/imports/api/roles/models';
 import { SITE_NAME } from '/imports/utils/constants';
-import { protectedRoutes, publicRoutes } from '/imports/utils/constants/routes';
+import { adminRoutes, protectedRoutes, publicRoutes } from '/imports/utils/constants/routes';
 
 interface RouteRendererProps extends BasicSiteProps {}
 
@@ -17,7 +18,7 @@ interface RouteRenderMenuItem extends MenuItemType {
     label: string | React.JSX.Element;
 }
 
-const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userProfile }) => {
+const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userProfile, userRoles }) => {
     const [location, navigate] = useLocation();
 
     const items: (RouteRenderMenuItem | undefined)[] = [
@@ -28,6 +29,15 @@ const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userPro
             onClick: () => navigate(publicRoutes.home.path),
         },
     ];
+
+    if (userRoles?.includes(AvailableUserRoles.ADMIN)) {
+        items.push({
+            key: 'logs',
+            icon: <AreaChartOutlined />,
+            label: 'Logs',
+            onClick: () => navigate(adminRoutes.logs.path),
+        });
+    }
 
     if (userId && userProfile) {
         items.push({

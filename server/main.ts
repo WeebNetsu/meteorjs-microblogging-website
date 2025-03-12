@@ -40,7 +40,7 @@ Meteor.startup(async () => {
             }),
         );
 
-        await Roles.addUsersToRolesAsync(defaultUser._id, [AvailableUserRoles.ADMIN]);
+        await Roles.addUsersToRolesAsync(defaultUser._id, [AvailableUserRoles.ADMIN, AvailableUserRoles.MODERATOR]);
 
         console.log('[DONE] Creating default site roles');
 
