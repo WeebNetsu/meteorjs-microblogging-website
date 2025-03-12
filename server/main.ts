@@ -1,8 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { createDefaultUserAccount } from './utils/dummyData';
+import PostLikeCollection from '/imports/api/postLike/postLike';
 import '/imports/startup/imports';
 
 Meteor.startup(async () => {
+    console.log('Creating collection indexes');
+    PostLikeCollection.rawCollection().createIndex({ postId: 1, userId: 1 });
+    console.log('[DONE] Creating collection indexes');
+
     // Deny all client-side updates to user documents (security layer)
     Meteor.users?.deny({ update: () => true });
 
@@ -16,4 +21,6 @@ Meteor.startup(async () => {
 
         console.log('All default data has been created');
     }
+
+    console.log('Startup complete');
 });

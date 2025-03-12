@@ -2,6 +2,7 @@ import { MethodSearchModel } from '/imports/types/interfaces';
 
 export enum AvailableCollectionNames {
     POSTS = 'posts',
+    POST_LIKES = 'post_likes',
     USERS = 'users',
     USER_PROFILE = 'user_profiles',
 }

@@ -1,10 +1,10 @@
-import { DeleteOutlined, EditOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { formatToHumanDate } from '@netsu/js-utils';
-import { Avatar, Button, Card, Space, Typography } from 'antd';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Space } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState } from 'react';
 import { AppUserIdModel } from '../App';
 import CreatePost from '../components/CreatePost';
+import PostCard from './components/PostCard';
 import PostModel from '/imports/api/post/models';
 import UserProfileModel from '/imports/api/userProfile/models';
 import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '/imports/api/utils/models';
@@ -128,28 +128,9 @@ const BrowsePage: React.FC<BrowsePageProps> = ({ userId }) => {
                 const postUser = userProfiles.find((up) => up.userId === post.userId);
 
                 // if we don't know the post user, don't show the post
-                if (!postUser) return <></>;
+                if (!postUser) return null;
 
-                return (
-                    <Card
-                        key={post._id}
-                        actions={postUser.userId === userId ? [<EditOutlined />, <DeleteOutlined />] : undefined}
-                        style={{ minWidth: 300 }}
-                    >
-                        <Card.Meta
-                            avatar={<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=2" />}
-                            description={
-                                <Space direction="vertical">
-                                    <Typography>{post.text}</Typography>
-                                    <Typography>
-                                        {formatToHumanDate(post.createdAt)} By{' '}
-                                        {userProfiles.find((up) => up.userId === post.userId)?.username ?? '???'}
-                                    </Typography>
-                                </Space>
-                            }
-                        />
-                    </Card>
-                );
+                return <PostCard key={post._id} post={post} postUser={postUser} userId={userId} />;
             })}
         </Space>
     );

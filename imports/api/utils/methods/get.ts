@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import PostCollection from '../../post/post';
+import PostLikeCollection from '../../postLike/postLike';
 import UserProfileModel from '../../userProfile/models';
 import UserProfileCollection from '../../userProfile/userProfile';
 import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '../models';
@@ -17,6 +18,7 @@ Meteor.methods({
     }: MethodUtilMethodsFindCollectionModel) {
         const collectionMap = {
             [AvailableCollectionNames.POSTS]: PostCollection,
+            [AvailableCollectionNames.POST_LIKES]: PostLikeCollection,
             [AvailableCollectionNames.USER_PROFILE]: UserProfileCollection,
             [AvailableCollectionNames.USERS]: Meteor.users,
         };

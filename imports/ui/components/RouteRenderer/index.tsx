@@ -1,86 +1,24 @@
 /* eslint-disable react/button-has-type */
-import { HomeOutlined, LoadingOutlined, LoginOutlined, LogoutOutlined, ProfileOutlined } from '@ant-design/icons';
+import { HomeOutlined, LoginOutlined, LogoutOutlined, ProfileOutlined } from '@ant-design/icons';
 import { limitText, removeUndefinedFromArray } from '@netsu/js-utils';
 import { Avatar, Dropdown, Layout, Menu } from 'antd';
 import { Content, Footer, Header } from 'antd/es/layout/layout';
 import { MenuItemType } from 'antd/es/menu/interface';
 import { Meteor } from 'meteor/meteor';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useLocation } from 'wouter';
-import UserProfileModel from '/imports/api/userProfile/models';
-import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '/imports/api/utils/models';
-import { ComponentProps } from '/imports/types/interfaces';
+import { BasicSiteProps } from '../../App';
 import { SITE_NAME } from '/imports/utils/constants';
 import { protectedRoutes, publicRoutes } from '/imports/utils/constants/routes';
-import { errorResponse } from '/imports/utils/errors';
 
-interface MiniRouteRenderUserProfileModel extends Pick<UserProfileModel, '_id' | 'username'> {}
-
-const miniRouteRenderUserProfileFields = {
-    _id: 1,
-    username: 1,
-};
-
-interface RouteRendererProps extends ComponentProps {
-    userId?: string;
-}
+interface RouteRendererProps extends BasicSiteProps {}
 
 interface RouteRenderMenuItem extends MenuItemType {
     label: string | React.JSX.Element;
 }
 
-const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId }) => {
+const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userProfile }) => {
     const [location, navigate] = useLocation();
-    const [loading, setLoading] = useState(!!userId);
-    const [userProfile, setUserProfile] = useState<MiniRouteRenderUserProfileModel | undefined>();
-
-    const fetchUserProfile = async () => {
-        if (!userId) return;
-
-        try {
-            const findData: MethodUtilMethodsFindCollectionModel = {
-                collection: AvailableCollectionNames.USER_PROFILE,
-                selector: {
-                    userId,
-                },
-                options: {
-                    fields: miniRouteRenderUserProfileFields,
-                },
-                onlyOne: true,
-            };
-
-            const res: MiniRouteRenderUserProfileModel | undefined = await Meteor.callAsync(
-                'utilMethods.findCollection',
-                findData,
-            );
-
-            setUserProfile(res);
-
-            return res;
-        } catch (error) {
-            errorResponse(error as Meteor.Error, 'Could not get users');
-        }
-
-        return undefined;
-    };
-
-    const fetchData = async (silent = false) => {
-        setLoading(!silent);
-
-        if (userId) await fetchUserProfile();
-
-        setLoading(false);
-    };
-
-    useEffect(() => {
-        if (userId) {
-            fetchData();
-        } else {
-            setUserProfile(undefined);
-        }
-    }, [userId]);
-
-    if (loading) return <LoadingOutlined />;
 
     const items: (RouteRenderMenuItem | undefined)[] = [
         {
