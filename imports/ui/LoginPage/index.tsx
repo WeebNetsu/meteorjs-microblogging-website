@@ -2,6 +2,8 @@ import { emailRegex } from '@netsu/js-utils';
 import { Button, Input, message, Space, Typography } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
+import { useLocation } from 'wouter';
+import { protectedRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
 
 const LoginPage: React.FC = () => {
@@ -9,6 +11,7 @@ const LoginPage: React.FC = () => {
     const [password, setPassword] = useState('');
     // display loader while logging in
     const [loggingIn, setLoggingIn] = useState(false);
+    const [location, navigate] = useLocation();
 
     const handleSubmit = async () => {
         const cleanedEmail = email.trim();
@@ -29,6 +32,8 @@ const LoginPage: React.FC = () => {
             if (error) {
                 return errorResponse(error, 'Could not log in');
             }
+
+            navigate(protectedRoutes.home.path);
         });
     };
 

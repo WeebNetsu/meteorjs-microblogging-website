@@ -9,13 +9,13 @@ What needs to be covered
 - [x] Installing Meteor.js
 - [x] Creating a TypeScript React Meteor Project (feel free to cover some https://v2-docs.meteor.com/commandline)
 - [ ] Collections
-- [ ] Allaning Roles
-- [ ] Startup
-- [ ] Accounts (signup/login)
-- [ ] USE UNDERSCORE instead of lodash
+- [ ] Allaning Roles (moderators and users - moderators can edit posts of other users)
+- [ ] Startup (create dummy accounts)
+- [ ] Accounts (signup/login) (optional, viewing posts can be be done by even non-logged in users)
 - [ ] Method Calls
-- [ ] Trackers
+- [ ] Trackers (maybe for viewing posts? New ones could be loaded in automatically? Or loading posts view counts or likes in real time?)
 - [ ] Check https://v2-docs.meteor.com/api/check
+- [ ] S3 (edit profile > upload profile picture)
 - [ ] Deploying Galaxy
 - [ ] Deploying to AWS with MUP
 
@@ -23,26 +23,26 @@ Tutorials (plan: Admin Dashboard):
 
 1. What is Meteor (slideshow)
 2. Installing METEOR and creating a simple project
-   - meteor create --typescript project name
-   - Show all the folders and files in the generated project
-   - Delete tests folder
+    - meteor create --typescript project name
+    - Show all the folders and files in the generated project
+    - Delete tests folder
 3. Add proper typescript support and implement router (https://github.com/WeebNetsu/meteor-typescript-template)
-   - cp -R ../meteor-typescript-template/typings/ .
-   - cp -R ../meteor-typescript-template/imports/types ./imports/
-   - npm install antd @ant-design/icons
-   - mention https://docs.meteor.com/packages/accounts-ui.html (we will not be using it)
-   - Delete hello and info .tsx files
-   - Fix app.tsx to be a default export and fix main.tsx to reflect that
-   - Delete everyting in api/ folder
-   - Delete everything inside server/main.ts
-   - Create HomePage folder and file
-   - Create NotFoundPage folder and file
-   - Create LoginPage folder and file (no styling needed yet)
-   - Install wouter meteor npm i wouter (react router has issues in meteor)
-   - Install js utils meteor npm i @netsu/js-utils
-   - Add accounts-password package (to see if user is logged in and later to help them log in)
-   - Create routes.tsx file and add routes (order matters)
-   - Add routes to App.tsx (note that we do not use route renderer yet)
+    - cp -R ../meteor-typescript-template/typings/ .
+    - cp -R ../meteor-typescript-template/imports/types ./imports/
+    - npm install antd @ant-design/icons
+    - mention https://docs.meteor.com/packages/accounts-ui.html (we will not be using it)
+    - Delete hello and info .tsx files
+    - Fix app.tsx to be a default export and fix main.tsx to reflect that
+    - Delete everyting in api/ folder
+    - Delete everything inside server/main.ts
+    - Create HomePage folder and file
+    - Create NotFoundPage folder and file
+    - Create LoginPage folder and file (no styling needed yet)
+    - Install wouter meteor npm i wouter (react router has issues in meteor)
+    - Install js utils meteor npm i @netsu/js-utils
+    - Add accounts-password package (to see if user is logged in and later to help them log in)
+    - Create routes.tsx file and add routes (order matters)
+    - Add routes to App.tsx (note that we do not use route renderer yet)
 
 ---
 

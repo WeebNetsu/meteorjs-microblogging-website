@@ -1,3 +1,4 @@
+import { LoadingOutlined } from '@ant-design/icons';
 import { ConfigProvider, theme } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
@@ -6,40 +7,54 @@ import { Route, Switch } from 'wouter';
 import { protectedRoutes, publicRoutes } from '../utils/constants/routes';
 import RouteRenderer from './components/RouteRenderer';
 
+/**
+ * Defines the type for a userId on login
+ *
+ * null - not logged in
+ * undefined - loading data
+ * string - logged in (user id)
+ */
+export type AppUserIdModel = string | undefined | null;
+
 const App: React.FC = () => {
-    const userId = useTracker(() => Meteor.userId());
+    const userId: AppUserIdModel = useTracker(() => Meteor.userId());
 
     // user is not logged in
     if (userId === null) {
         // you can add any config providers here to cover all public routes
         return (
-            <>
+            <ConfigProvider
+                theme={{
+                    // change to defaultAlgorithm for light theme
+                    algorithm: theme.darkAlgorithm,
+                }}
+            >
                 <Switch>
                     {Object.values(publicRoutes).map((route) => (
                         <Route key={route.path} path={route.path}>
-                            {route.element}
+                            <RouteRenderer>{route.element}</RouteRenderer>
                         </Route>
                     ))}
                 </Switch>
-            </>
+            </ConfigProvider>
         );
     }
 
     // still loading data from backend
-    if (!userId) return <p>Loading</p>;
+    if (userId === undefined) return <LoadingOutlined />;
 
     // you can add any config providers here to cover all protected routes
     return (
         <ConfigProvider
             theme={{
-                // change to darkAlgorithm for dark theme
-                algorithm: theme.defaultAlgorithm,
+                // change to defaultAlgorithm for light theme
+                algorithm: theme.darkAlgorithm,
             }}
         >
             <Switch>
                 {Object.values(protectedRoutes).map((route) => (
                     <Route key={route.path} path={route.path}>
-                        <RouteRenderer>{route.element}</RouteRenderer>
+                        <RouteRenderer loggedIn>{route.element}</RouteRenderer>
                     </Route>
                 ))}
             </Switch>
