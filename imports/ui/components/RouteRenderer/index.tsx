@@ -17,7 +17,7 @@ interface RouteRenderMenuItem extends MenuItemType {
     label: string | React.JSX.Element;
 }
 
-const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userProfile, userRoles }) => {
+const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userProfile, userRoles, profilePhoto }) => {
     const [location, navigate] = useLocation();
 
     const items: (RouteRenderMenuItem | undefined)[] = [
@@ -68,9 +68,18 @@ const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userPro
                     }}
                     trigger={['click']}
                 >
-                    <Avatar style={{ backgroundColor: '#ff98ad', verticalAlign: 'middle' }} size="large" gap={4}>
-                        {limitText(userProfile.username, 7)}
-                    </Avatar>
+                    {profilePhoto ? (
+                        <Avatar
+                            src={profilePhoto}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', maxWidth: 40, maxHeight: 40 }}
+                            alt="avatar"
+                            size={'large'}
+                        />
+                    ) : (
+                        <Avatar style={{ backgroundColor: '#ff98ad', verticalAlign: 'middle' }} size="large" gap={4}>
+                            {limitText(userProfile.username, 7)}
+                        </Avatar>
+                    )}
                 </Dropdown>
             ),
         });

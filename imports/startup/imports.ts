@@ -1,4 +1,5 @@
 // methods
+import '/imports/api/aws/methods';
 import '/imports/api/post/methods';
 import '/imports/api/postLike/methods';
 import '/imports/api/roles/methods';

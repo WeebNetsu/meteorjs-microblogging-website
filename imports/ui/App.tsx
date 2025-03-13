@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { useEffect, useState } from 'react';
 import { Route, Switch } from 'wouter';
+import { MethodGetAWSFileFromS3Model } from '../api/aws/models';
 import { AvailableUserRoles, MethodGetRolesUserRolesModel, ResultGetRolesUserRolesModel } from '../api/roles/models';
 import UserProfileModel from '../api/userProfile/models';
 import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '../api/utils/models';
@@ -12,11 +13,12 @@ import { adminRoutes, protectedRoutes, publicRoutes } from '../utils/constants/r
 import { errorResponse } from '../utils/errors';
 import RouteRenderer from './components/RouteRenderer';
 
-export interface MiniAppUserProfileModel extends Pick<UserProfileModel, '_id' | 'username'> {}
+export interface MiniAppUserProfileModel extends Pick<UserProfileModel, '_id' | 'username' | 'photo'> {}
 
 const miniAppUserProfileFields = {
     _id: 1,
     username: 1,
+    photo: 1,
 };
 
 /**
@@ -32,6 +34,7 @@ export interface BasicSiteProps extends ComponentProps {
     userId?: string;
     userProfile?: MiniAppUserProfileModel;
     userRoles?: AvailableUserRoles[];
+    profilePhoto?: string | undefined;
 }
 
 const App: React.FC = () => {
@@ -42,6 +45,7 @@ const App: React.FC = () => {
     const [userProfile, setUserProfile] = useState<MiniAppUserProfileModel | undefined>();
     const [loading, setLoading] = useState(true);
     const [userRoles, setUserRoles] = useState<AvailableUserRoles[]>([]);
+    const [profilePhoto, setProfilePhoto] = useState<string | undefined>();
 
     const fetchUserRole = async () => {
         if (!userId) return;
@@ -93,12 +97,28 @@ const App: React.FC = () => {
         return undefined;
     };
 
+    const fetchProfilePhoto = async (key: string) => {
+        try {
+            const data: MethodGetAWSFileFromS3Model = {
+                key: key,
+            };
+
+            const res: string | undefined = await Meteor.callAsync('get.aws.fileFromS3', data);
+
+            setProfilePhoto(res);
+        } catch (error) {
+            errorResponse(error as Meteor.Error, 'Could not get some images');
+        }
+    };
+
     const fetchData = async (silent = false) => {
         setLoading(!silent);
 
         if (userId) {
-            await fetchUserProfile();
+            const profile = await fetchUserProfile();
             await fetchUserRole();
+            // allow to lazy load
+            if (profile?.photo?.key) fetchProfilePhoto(profile?.photo?.key);
         }
 
         setLoading(false);
@@ -149,16 +169,26 @@ const App: React.FC = () => {
                 {userRoles.includes(AvailableUserRoles.ADMIN) &&
                     Object.values(adminRoutes).map((route) => (
                         <Route key={route.path} path={route.path}>
-                            <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
-                                {React.cloneElement(route.element, { userId, userProfile, userRoles })}
+                            <RouteRenderer
+                                profilePhoto={profilePhoto}
+                                userId={userId}
+                                userProfile={userProfile}
+                                userRoles={userRoles}
+                            >
+                                {React.cloneElement(route.element, { userId, userProfile, userRoles, profilePhoto })}
                             </RouteRenderer>
                         </Route>
                     ))}
 
                 {Object.values(protectedRoutes).map((route: any) => (
                     <Route key={route.path} path={route.path}>
-                        <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
-                            {React.cloneElement(route.element, { userId, userProfile, userRoles })}
+                        <RouteRenderer
+                            profilePhoto={profilePhoto}
+                            userId={userId}
+                            userProfile={userProfile}
+                            userRoles={userRoles}
+                        >
+                            {React.cloneElement(route.element, { userId, userProfile, userRoles, profilePhoto })}
                         </RouteRenderer>
                     </Route>
                 ))}
@@ -166,8 +196,13 @@ const App: React.FC = () => {
                 {/* since public routes contains the home routes, they need to be placed last */}
                 {Object.values(publicRoutes).map((route) => (
                     <Route key={route.path} path={route.path}>
-                        <RouteRenderer userId={userId} userProfile={userProfile} userRoles={userRoles}>
-                            {React.cloneElement(route.element, { userId, userProfile, userRoles })}
+                        <RouteRenderer
+                            profilePhoto={profilePhoto}
+                            userId={userId}
+                            userProfile={userProfile}
+                            userRoles={userRoles}
+                        >
+                            {React.cloneElement(route.element, { userId, userProfile, userRoles, profilePhoto })}
                         </RouteRenderer>
                     </Route>
                 ))}

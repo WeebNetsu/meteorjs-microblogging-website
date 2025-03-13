@@ -1,12 +1,13 @@
 import { DeleteOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
-import { formatToHumanDate } from '@netsu/js-utils';
+import { formatToHumanDate, limitText } from '@netsu/js-utils';
 import { Avatar, Button, Card, message, Popconfirm, Space, Typography } from 'antd';
 import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { FetchDataType, MiniBrowsePagePostModel, MiniBrowsePageUserProfileModel } from '../..';
+import { MethodGetAWSFileFromS3Model } from '/imports/api/aws/models';
 import PostModel, { MethodSetPostDeleteModel } from '/imports/api/post/models';
 import {
     MethodPublishPostLikeTotalLikesModel,
@@ -29,6 +30,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser, userRoles, fetchParentData }) => {
     const [location, navigate] = useLocation();
+    const [profilePhoto, setProfilePhoto] = useState<string | undefined>();
 
     const loadingLikes = useTracker(() => {
         const totalLikeData: MethodPublishPostLikeTotalLikesModel = {
@@ -77,6 +79,24 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser, userRoles, 
         [],
     );
 
+    const fetchProfilePhoto = async (key: string) => {
+        try {
+            const data: MethodGetAWSFileFromS3Model = {
+                key: key,
+            };
+
+            const res: string | undefined = await Meteor.callAsync('get.aws.fileFromS3', data);
+
+            setProfilePhoto(res);
+        } catch (error) {
+            errorResponse(error as Meteor.Error, 'Could not get some images');
+        }
+    };
+
+    useEffect(() => {
+        if (postUser.photo?.key) fetchProfilePhoto(postUser.photo?.key);
+    }, []);
+
     const handleDeletePost = async () => {
         try {
             const data: MethodSetPostDeleteModel = {
@@ -121,7 +141,20 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser, userRoles, 
     return (
         <Card key={post._id} actions={postActions} style={{ minWidth: 300 }}>
             <Card.Meta
-                avatar={<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=2" />}
+                avatar={
+                    profilePhoto ? (
+                        <Avatar
+                            src={profilePhoto}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', maxWidth: 30, maxHeight: 30 }}
+                            alt="avatar"
+                            size={'large'}
+                        />
+                    ) : (
+                        <Avatar style={{ backgroundColor: '#ff98ad', verticalAlign: 'middle' }} size="large" gap={4}>
+                            {limitText(postUser.username, 7)}
+                        </Avatar>
+                    )
+                }
                 description={
                     <Space direction="vertical">
                         <Typography>{post.text}</Typography>

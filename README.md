@@ -31,7 +31,7 @@ What needs to be covered
 - [x] Check https://v2-docs.meteor.com/api/check
 - [x] Use image from public folder to show how to use it
 - [x] Edit user profile
-- [ ] S3 (edit profile > upload profile picture)
+- [x] S3 (edit profile > upload profile picture)
 - [ ] Deploying Galaxy
 - [ ] Deploying to AWS with MUP
 

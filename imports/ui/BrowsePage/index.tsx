@@ -19,12 +19,14 @@ const miniBrowsePagePostFields = {
     userId: 1,
 };
 
-export interface MiniBrowsePageUserProfileModel extends Pick<UserProfileModel, '_id' | 'username' | 'userId'> {}
+export interface MiniBrowsePageUserProfileModel
+    extends Pick<UserProfileModel, '_id' | 'username' | 'userId' | 'photo'> {}
 
 const miniBrowsePageUserProfileFields = {
     _id: 1,
     username: 1,
     userId: 1,
+    photo: 1,
 };
 
 interface BrowsePageProps extends BasicSiteProps {}

@@ -3,7 +3,10 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { MethodGetRolesUserRolesModel, ResultGetRolesUserRolesModel } from '../../roles/models';
 import { createNewSystemLogSafe } from '../../systemChangeLogs/utils';
-import UserProfileModel, { MethodSetUserProfileUpdateModel } from '../models';
+import UserProfileModel, {
+    MethodSetUserProfileUpdateModel,
+    MethodSetUserProfileUpdateProfilePhotoModel,
+} from '../models';
 import UserProfileCollection from '../userProfile';
 import { isModerator, stringContainsOnlyLettersAndNumbers } from '/imports/utils/checks';
 import { getUserEmail } from '/imports/utils/meteor';
@@ -85,7 +88,7 @@ Meteor.methods({
         );
 
         await createNewSystemLogSafe({
-            subject: `${getUserEmail(currentUser) ?? currentUser._id} has updated a user profile ${getUserEmail(currentUser)}`,
+            subject: `${getUserEmail(user) ?? user._id} has updated a user profile ${getUserEmail(currentUser)}`,
             update: `await UserProfileCollection.updateAsync(
             { userId: ${userId} },
             ${JSON.stringify({
@@ -94,6 +97,58 @@ Meteor.methods({
             );`,
             method: 'set.userProfile.update',
             previousState: originalState,
+        });
+    },
+    'set.userProfile.updateProfilePhoto': async ({ key, userId }: MethodSetUserProfileUpdateProfilePhotoModel) => {
+        check(userId, String);
+        check(key, String);
+
+        const user = await currentUserAsync();
+        if (!user) return noAuthError();
+
+        if (user._id !== userId) {
+            const currentUserRoleData: MethodGetRolesUserRolesModel = {
+                userIds: [user._id],
+            };
+
+            const currentUserRole: ResultGetRolesUserRolesModel = await Meteor.callAsync(
+                'get.roles.userRoles',
+                currentUserRoleData,
+            );
+
+            if (!isModerator(currentUserRole.result.find((r) => r.userId === user._id)?.roles ?? [])) {
+                return noAuthError();
+            }
+        }
+
+        const currentUser = user._id === userId ? user : await getUserByIdAsync(userId);
+        console.log({ userId, key, user, currentUser });
+        if (!currentUser) return notFoundError('user account');
+
+        await UserProfileCollection.updateAsync(
+            { userId },
+            {
+                $set: {
+                    photo: {
+                        key,
+                    },
+                },
+            },
+        );
+
+        await createNewSystemLogSafe({
+            subject: `${getUserEmail(user) ?? user._id} has updated a user profile photo ${getUserEmail(currentUser)}`,
+            update: `await UserProfileCollection.updateAsync(
+            { userId: ${userId} },
+            ${JSON.stringify({
+                $set: {
+                    photo: {
+                        key,
+                    },
+                },
+            })}
+            );`,
+            method: 'set.userProfile.updateProfilePhoto',
         });
     },
 });

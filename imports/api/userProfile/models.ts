@@ -1,3 +1,8 @@
+export interface PhotoModel {
+    key: string;
+    // you can save other information here like file type and size
+}
+
 interface UserProfileModel {
     _id: string;
     /**
@@ -17,6 +22,7 @@ interface UserProfileModel {
      * access the user profile instead of user account
      */
     username: string;
+    photo?: PhotoModel;
 }
 
 export default UserProfileModel;
@@ -26,5 +32,10 @@ export default UserProfileModel;
 // ---- SET METHOD MODELS ----
 export interface MethodSetUserProfileUpdateModel {
     update: Partial<UserProfileModel>;
+    userId: string;
+}
+
+export interface MethodSetUserProfileUpdateProfilePhotoModel {
+    key: string;
     userId: string;
 }
