@@ -34,7 +34,9 @@ Meteor.methods({
         const cleanedLastName = update.lastName ? update.lastName.trim() : undefined;
 
         if (cleanedUsername) {
-            if (cleanedUsername[0] === '@') cleanedUsername.slice(1);
+            if (cleanedUsername[0] === '@') {
+                cleanedUsername = cleanedUsername.slice(1);
+            }
             if (cleanedUsername.length < 3) return clientContentError('Username is too short');
 
             if (!stringContainsOnlyLettersAndNumbers(cleanedUsername, true)) {
