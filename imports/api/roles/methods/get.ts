@@ -11,7 +11,6 @@ Meteor.methods({
             userIds.map(async (userId) => {
                 const roles = await Roles.getRolesForUserAsync(userId);
 
-                // a user chan only belong to a single church thus we only get the first id from the array
                 return { userId, roles: roles as AvailableUserRoles[] };
             }),
         );
