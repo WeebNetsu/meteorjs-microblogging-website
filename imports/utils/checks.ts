@@ -1,3 +1,5 @@
+import { AvailableUserRoles } from '../api/roles/models';
+
 /**
  * Rough check to see if the screen is small enough to be considered mobile.
  * Not super accurate.
@@ -46,4 +48,8 @@ export const stringContainsOnlyLettersAndNumbers = (str: string, allowUnderscore
     if (allowUnderscore) return /^[A-Za-z0-9_]*$/.test(str);
 
     return /^[A-Za-z0-9]*$/.test(str);
+};
+
+export const isModerator = (roles: AvailableUserRoles[]) => {
+    return roles.includes(AvailableUserRoles.ADMIN) || roles.includes(AvailableUserRoles.MODERATOR);
 };

@@ -1,7 +1,6 @@
-/* eslint-disable react/button-has-type */
 import { AreaChartOutlined, HomeOutlined, LoginOutlined, LogoutOutlined, ProfileOutlined } from '@ant-design/icons';
 import { limitText, removeUndefinedFromArray } from '@netsu/js-utils';
-import { Avatar, Dropdown, Layout, Menu } from 'antd';
+import { Avatar, Dropdown, Image, Layout, Menu } from 'antd';
 import { Content, Footer, Header } from 'antd/es/layout/layout';
 import { MenuItemType } from 'antd/es/menu/interface';
 import { Meteor } from 'meteor/meteor';
@@ -22,6 +21,11 @@ const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userPro
     const [location, navigate] = useLocation();
 
     const items: (RouteRenderMenuItem | undefined)[] = [
+        {
+            key: 'logo',
+            label: <Image src="/logo.png" width={50} preview={false} />,
+            onClick: () => navigate(publicRoutes.home.path),
+        },
         {
             key: 'home',
             icon: <HomeOutlined />,

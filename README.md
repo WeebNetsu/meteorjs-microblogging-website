@@ -29,6 +29,8 @@ What needs to be covered
 - [x] Method Calls
 - [x] Trackers (maybe for viewing posts? New ones could be loaded in automatically? Or loading posts view counts or likes in real time?)
 - [x] Check https://v2-docs.meteor.com/api/check
+- [x] Use image from public folder to show how to use it
+- [x] Edit user profile
 - [ ] S3 (edit profile > upload profile picture)
 - [ ] Deploying Galaxy
 - [ ] Deploying to AWS with MUP
@@ -57,6 +59,10 @@ Tutorials (plan: Admin Dashboard):
     - Add accounts-password package (to see if user is logged in and later to help them log in)
     - Create routes.tsx file and add routes (order matters)
     - Add routes to App.tsx (note that we do not use route renderer yet)
+
+## Thanks
+
+Logo https://pixabay.com/vectors/humming-bird-bird-vector-logo-1935665/
 
 ---
 
