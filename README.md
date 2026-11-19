@@ -21,14 +21,14 @@ This will become my Meteor.js course.
 What needs to be covered
 
 - [x] Installing Meteor.js
-- [x] Creating a TypeScript React Meteor Project (feel free to cover some https://v2-docs.meteor.com/commandline)
+- [x] Creating a TypeScript React Meteor Project (feel free to cover some https://docs.meteor.com/cli/)
 - [x] Collections
 - [x] Allaning Roles (moderators and users - moderators can edit posts of other users)
 - [x] Startup (create dummy accounts)
 - [x] Accounts (signup/login) (optional, viewing posts can be be done by even non-logged in users)
 - [x] Method Calls
 - [x] Trackers (maybe for viewing posts? New ones could be loaded in automatically? Or loading posts view counts or likes in real time?)
-- [x] Check https://v2-docs.meteor.com/api/check
+- [x] Check https://docs.meteor.com/api/check
 - [x] Use image from public folder to show how to use it
 - [x] Edit user profile
 - [x] S3 (edit profile > upload profile picture)
