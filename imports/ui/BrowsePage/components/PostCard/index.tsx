@@ -7,9 +7,10 @@ import { useTracker } from 'meteor/react-meteor-data';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { FetchDataType, MiniBrowsePagePostModel, MiniBrowsePageUserProfileModel } from '../..';
-import { MethodGetAWSFileFromS3Model } from '/imports/api/aws/models';
-import { MethodSetPostDeleteModel } from '/imports/api/post/models';
+import { AvailableAwsMethods, MethodGetAWSFileFromS3Model } from '/imports/api/aws/models';
+import { AvailablePostMethods, MethodSetPostDeleteModel } from '/imports/api/post/models';
 import PostLikeModel, {
+    AvailablePostLikeMethods,
     MethodPublishPostLikeTotalLikesModel,
     MethodPublishPostLikeUserLikedModel,
     MethodSetPostLikeLikeOrUnlikeModel,
@@ -71,7 +72,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser, userRoles, 
                         postId: post._id,
                     };
 
-                    await Meteor.callAsync('set.postLike.likeOrUnlike', data);
+                    await Meteor.callAsync(AvailablePostLikeMethods.SET_LIKE_OR_UNLIKE, data);
                 } catch (error) {
                     errorResponse(error as Meteor.Error, 'Could not like or unlike post');
                 }
@@ -85,7 +86,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser, userRoles, 
                 key: key,
             };
 
-            const res: string | undefined = await Meteor.callAsync('get.aws.fileFromS3', data);
+            const res: string | undefined = await Meteor.callAsync(AvailableAwsMethods.GET_FILE_FROM_S3, data);
 
             setProfilePhoto(res);
         } catch (error) {
@@ -103,7 +104,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, postUser, userRoles, 
                 postId: post._id,
             };
 
-            await Meteor.callAsync('set.post.delete', data);
+            await Meteor.callAsync(AvailablePostMethods.SET_DELETE, data);
 
             message.success('Post Deleted');
             fetchParentData(true);

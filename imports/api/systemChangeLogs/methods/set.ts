@@ -1,11 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import SystemChangeLogsModel, { MethodSetSystemChangeLogsCreateModel } from '../models';
+import SystemChangeLogsModel, {
+    AvailableSystemChangeLogMethods,
+    MethodSetSystemChangeLogsCreateModel,
+} from '../models';
 import SystemChangeLogsCollection from '../systemChangeLogs';
 import { noAuthError } from '/imports/utils/serverErrors';
 import { currentUserAsync } from '/server/utils/meteor';
 
 Meteor.methods({
-    'set.systemChangeLogs.create': async ({
+    [AvailableSystemChangeLogMethods.SET_CREATE]: async ({
         subject,
         update,
         note,

@@ -4,7 +4,7 @@ import { Button, Flex, Input, message, Space } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import { FetchDataType } from '../../BrowsePage';
-import { MethodSetPostCreateModel } from '/imports/api/post/models';
+import { AvailablePostMethods, MethodSetPostCreateModel } from '/imports/api/post/models';
 import { MAX_POST_LENGTH } from '/imports/utils/constants';
 import { errorResponse } from '/imports/utils/errors';
 
@@ -29,7 +29,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ fetchParentData, show, setShow 
                 text: cleanedText,
             };
 
-            await Meteor.callAsync('set.post.create', data);
+            await Meteor.callAsync(AvailablePostMethods.SET_CREATE, data);
         } catch (error) {
             return errorResponse(error as Meteor.Error, 'Could not create post');
         }

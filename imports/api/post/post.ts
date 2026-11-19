@@ -1,7 +1,6 @@
 import { Mongo } from 'meteor/mongo';
-import { AvailableCollectionNames } from '../utils/models';
 import PostModel from './models';
 
-const PostCollection = new Mongo.Collection<PostModel>(AvailableCollectionNames.POSTS);
+const PostCollection = new Mongo.Collection<PostModel>('posts');
 
 export default PostCollection;

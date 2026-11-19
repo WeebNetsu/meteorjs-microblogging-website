@@ -1,10 +1,19 @@
 import { Roles } from 'meteor/alanning:roles';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { AvailableUserRoles, MethodGetRolesUserRolesModel, ResultGetRolesUserRolesModel } from '../models';
+import {
+    AvailableRolesMethods,
+    AvailableUserRoles,
+    MethodGetRolesUserRolesModel,
+    ResultGetRolesHasAdminRoleModel,
+    ResultGetRolesUserRolesModel,
+} from '../models';
+import { currentUserAsync } from '/server/utils/meteor';
 
 Meteor.methods({
-    'get.roles.userRoles': async ({ userIds }: MethodGetRolesUserRolesModel): Promise<ResultGetRolesUserRolesModel> => {
+    [AvailableRolesMethods.GET_USER_ROLES]: async ({
+        userIds,
+    }: MethodGetRolesUserRolesModel): Promise<ResultGetRolesUserRolesModel> => {
         check(userIds, [String]);
 
         const res = await Promise.all(
@@ -16,5 +25,19 @@ Meteor.methods({
         );
 
         return { result: res };
+    },
+    [AvailableRolesMethods.GET_HAS_ADMIN_ROLE]: async (): Promise<ResultGetRolesHasAdminRoleModel> => {
+        const user = await currentUserAsync();
+        if (!user) {
+            return {
+                admin: false,
+            };
+        }
+
+        const roles = await Roles.getRolesForUserAsync(user._id);
+
+        return {
+            admin: roles?.includes(AvailableUserRoles.ADMIN),
+        };
     },
 });

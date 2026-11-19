@@ -1,7 +1,6 @@
 import { Mongo } from 'meteor/mongo';
-import { AvailableCollectionNames } from '../utils/models';
 import PostLikeModel from './models';
 
-const PostLikeCollection = new Mongo.Collection<PostLikeModel>(AvailableCollectionNames.POST_LIKES);
+const PostLikeCollection = new Mongo.Collection<PostLikeModel>('post_likes');
 
 export default PostLikeCollection;

@@ -3,12 +3,18 @@ import { Accounts } from 'meteor/accounts-base';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import UserProfileCollection from '../../userProfile/userProfile';
-import { MethodSetUserCreateModel, UserModel } from '../models';
+import { AvailableUserMethods, MethodSetUserCreateModel, UserModel } from '../models';
 import { stringContainsOnlyLettersAndNumbers } from '/imports/utils/checks';
 import { clientContentError, notFoundError } from '/imports/utils/serverErrors';
 
 Meteor.methods({
-    'set.user.create': async function ({ email, password, firstName, lastName, username }: MethodSetUserCreateModel) {
+    [AvailableUserMethods.SET_CREATE]: async function ({
+        email,
+        password,
+        firstName,
+        lastName,
+        username,
+    }: MethodSetUserCreateModel) {
         check(email, String);
         check(password, String);
         check(firstName, String);

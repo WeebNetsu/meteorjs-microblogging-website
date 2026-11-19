@@ -27,7 +27,28 @@ interface UserProfileModel {
 
 export default UserProfileModel;
 
+// ---- METHODS -----
+export enum AvailableUserProfileMethods {
+    // GET
+    GET_PUBLIC_DATA = 'get.userProfiles.publicData',
+
+    // SET
+    SET_UPDATE = 'set.userProfile.update',
+    SET_UPDATE_PROFILE_PHOTO = 'set.userProfile.updateProfilePhoto',
+}
+
 // ---- GET METHOD MODELS ----
+
+export interface MethodGetUserProfilesPublicDataModel {
+    /**
+     * Will fetch data for the specific user, if not provided, will fetch data for current user
+     */
+    username?: string;
+}
+
+export interface ResultGetUserProfilesPublicDataResponseModel {
+    user: Pick<UserProfileModel, '_id' | 'username' | 'photo' | 'firstName' | 'lastName' | 'userId'>;
+}
 
 // ---- SET METHOD MODELS ----
 export interface MethodSetUserProfileUpdateModel {

@@ -3,14 +3,14 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import PostCollection from '../../post/post';
 import { createNewSystemLogSafe } from '../../systemChangeLogs/utils';
-import PostLikeModel, { MethodSetPostLikeLikeOrUnlikeModel } from '../models';
+import PostLikeModel, { AvailablePostLikeMethods, MethodSetPostLikeLikeOrUnlikeModel } from '../models';
 import PostLikeCollection from '../postLike';
 import { getUserEmail } from '/imports/utils/meteor';
 import { noAuthError, notFoundError } from '/imports/utils/serverErrors';
 import { currentUserAsync } from '/server/utils/meteor';
 
 Meteor.methods({
-    'set.postLike.likeOrUnlike': async ({ postId }: MethodSetPostLikeLikeOrUnlikeModel) => {
+    [AvailablePostLikeMethods.SET_LIKE_OR_UNLIKE]: async ({ postId }: MethodSetPostLikeLikeOrUnlikeModel) => {
         check(postId, String);
 
         const user = await currentUserAsync();
@@ -43,7 +43,7 @@ Meteor.methods({
                       postId: post._id,
                       createdAt: new Date(),
                   })});`,
-            method: 'set.postLike.likeOrUnlike',
+            method: AvailablePostLikeMethods.SET_LIKE_OR_UNLIKE,
         });
     },
 });

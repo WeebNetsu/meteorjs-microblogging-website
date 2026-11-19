@@ -21,7 +21,7 @@ export const getUserByIdAsync = async (userId: string) => {
  *
  * @meteor users.get.current
  *
- * @note **SERVER ONLY** (get.users.current method for client)
+ * @note **SERVER ONLY**
  *
  * @returns The current user
  */

@@ -3,7 +3,7 @@ import { Button, Input, message, Space, Typography } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
-import { MethodSetUserCreateModel } from '/imports/api/users/models';
+import { AvailableUserMethods, MethodSetUserCreateModel } from '/imports/api/users/models';
 import { publicRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
 
@@ -50,7 +50,7 @@ const SignupPage: React.FC = () => {
                 username: cleanedUsername,
             };
 
-            await Meteor.callAsync('set.user.create', data);
+            await Meteor.callAsync(AvailableUserMethods.SET_CREATE, data);
         } catch (error) {
             setLoggingIn(false);
 

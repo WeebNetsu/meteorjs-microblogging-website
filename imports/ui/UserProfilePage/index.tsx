@@ -9,15 +9,18 @@ import { useLocation, useParams } from 'wouter';
 import { BasicSiteProps } from '../App';
 import NotFoundPage from '../NotFoundPage';
 import {
+    AvailableAwsMethods,
     MethodGetAWSFileFromS3Model,
     MethodSetAwsDeleteFileModel,
     MethodSetAwsUploadFileModel,
 } from '/imports/api/aws/models';
 import UserProfileModel, {
+    AvailableUserProfileMethods,
+    MethodGetUserProfilesPublicDataModel,
     MethodSetUserProfileUpdateModel,
     MethodSetUserProfileUpdateProfilePhotoModel,
+    ResultGetUserProfilesPublicDataResponseModel,
 } from '/imports/api/userProfile/models';
-import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '/imports/api/utils/models';
 import { encodeImageFileAsURL } from '/imports/utils';
 import { isModerator } from '/imports/utils/checks';
 import { publicRoutes } from '/imports/utils/constants/routes';
@@ -52,7 +55,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId, userRoles }) 
                 key: key,
             };
 
-            const res: string | undefined = await Meteor.callAsync('get.aws.fileFromS3', data);
+            const res: string | undefined = await Meteor.callAsync(AvailableAwsMethods.GET_FILE_FROM_S3, data);
 
             setProfilePhoto(res);
         } catch (error) {
@@ -64,25 +67,18 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId, userRoles }) 
         if (!username) return;
 
         try {
-            const findData: MethodUtilMethodsFindCollectionModel = {
-                collection: AvailableCollectionNames.USER_PROFILE,
-                selector: {
-                    username,
-                },
-                options: {
-                    fields: miniUserProfilePageUserProfileFields,
-                },
-                onlyOne: true,
+            const data: MethodGetUserProfilesPublicDataModel = {
+                username,
             };
 
-            const res: MiniUserProfilePageUserProfileModel | undefined = await Meteor.callAsync(
-                'utilMethods.findCollection',
-                findData,
+            const res: ResultGetUserProfilesPublicDataResponseModel = await Meteor.callAsync(
+                AvailableUserProfileMethods.GET_PUBLIC_DATA,
+                data,
             );
 
-            setUser(res);
+            setUser(res.user);
 
-            return res;
+            return res.user;
         } catch (error) {
             errorResponse(error as Meteor.Error, 'Could not get users');
         }
@@ -135,7 +131,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId, userRoles }) 
             };
 
             try {
-                await Meteor.callAsync('set.aws.deleteFile', deleteData);
+                await Meteor.callAsync(AvailableAwsMethods.SET_DELETE_FILE, deleteData);
             } catch (error) {
                 // do not throw an error
                 // todo maybe notify dev?
@@ -159,7 +155,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId, userRoles }) 
         };
 
         try {
-            await Meteor.callAsync('set.aws.uploadFile', data);
+            await Meteor.callAsync(AvailableAwsMethods.SET_UPLOAD_FILE, data);
         } catch (error) {
             console.error(error);
             // if an upload fails, we need to try to delete all uploaded images
@@ -168,7 +164,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId, userRoles }) 
             };
 
             try {
-                await Meteor.callAsync('set.aws.deleteFile', deleteData);
+                await Meteor.callAsync(AvailableAwsMethods.SET_DELETE_FILE, deleteData);
             } catch (error) {
                 // do not throw an error
 
@@ -199,7 +195,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId, userRoles }) 
         };
 
         try {
-            await Meteor.callAsync('set.userProfile.update', data);
+            await Meteor.callAsync(AvailableUserProfileMethods.SET_UPDATE, data);
         } catch (error) {
             return errorResponse(error as Meteor.Error, 'Could not update profile');
         }
@@ -234,7 +230,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId, userRoles }) 
                                 userId: user.userId,
                             };
 
-                            await Meteor.callAsync('set.userProfile.updateProfilePhoto', data);
+                            await Meteor.callAsync(AvailableUserProfileMethods.SET_UPDATE_PROFILE_PHOTO, data);
                         } catch (error) {
                             // homework suggestion: delete the newly uploaded image if this happens
                             return errorResponse(error as Meteor.Error, 'Could not save new profile photo');

@@ -1,3 +1,5 @@
+import UserProfileModel from '../userProfile/models';
+
 interface PostModel {
     _id: string;
     /**
@@ -12,7 +14,22 @@ interface PostModel {
 
 export default PostModel;
 
+// ---- METHODS ----
+export enum AvailablePostMethods {
+    // GET
+    GET_LATEST_WITH_USER_PROFILES = 'get.posts.latestWithUserProfiles',
+
+    // SET
+    SET_CREATE = 'set.post.create',
+    SET_DELETE = 'set.post.delete',
+}
+
 // ---- GET METHOD MODELS ----
+
+export interface ResultGetPostsLatestModel {
+    posts: Pick<PostModel, '_id' | 'createdAt' | 'text' | 'userId'>[];
+    users: Pick<UserProfileModel, '_id' | 'username' | 'userId' | 'photo'>[];
+}
 
 // ---- SET METHOD MODELS ----
 export interface MethodSetPostCreateModel {

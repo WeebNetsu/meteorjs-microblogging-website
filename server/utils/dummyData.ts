@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { Meteor } from 'meteor/meteor';
-import { MethodSetUserCreateModel } from '/imports/api/users/models';
+import { AvailableUserMethods, MethodSetUserCreateModel } from '/imports/api/users/models';
 
 export const createDefaultUserAccount = async () => {
     const data: MethodSetUserCreateModel = {
@@ -11,5 +11,5 @@ export const createDefaultUserAccount = async () => {
         username: 'admin',
     };
 
-    await Meteor.callAsync('set.user.create', data);
+    await Meteor.callAsync(AvailableUserMethods.SET_CREATE, data);
 };

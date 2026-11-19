@@ -10,6 +10,11 @@ interface PostLikeModel {
 
 export default PostLikeModel;
 
+// ---- METHODS
+export enum AvailablePostLikeMethods {
+    SET_LIKE_OR_UNLIKE = 'set.postLike.likeOrUnlike',
+}
+
 // ---- GET METHOD MODELS ----
 
 // ---- SET METHOD MODELS ----

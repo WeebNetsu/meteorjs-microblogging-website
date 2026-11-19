@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import { Meteor } from 'meteor/meteor';
-import { MethodSetSystemChangeLogsCreateModel } from './models';
+import { AvailableSystemChangeLogMethods, MethodSetSystemChangeLogsCreateModel } from './models';
 
 export interface CreateNewSystemLogSafeModel extends MethodSetSystemChangeLogsCreateModel {
     /**
@@ -19,7 +19,7 @@ export interface CreateNewSystemLogSafeModel extends MethodSetSystemChangeLogsCr
  */
 export const createNewSystemLogSafe = async (data: CreateNewSystemLogSafeModel) => {
     try {
-        await Meteor.callAsync('set.systemChangeLogs.create', data);
+        await Meteor.callAsync(AvailableSystemChangeLogMethods.SET_CREATE, data);
     } catch (error) {
         console.error(error);
         // do nothing - should we notify the user logging failed?

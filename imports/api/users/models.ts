@@ -22,7 +22,23 @@ export class UserModel implements Meteor.User {
     };
 }
 
+// ---- METHODS ----
+export enum AvailableUserMethods {
+    // GET
+    GET_ALL_EMAILS = 'get.users.allEmails',
+
+    // SET
+    SET_CREATE = 'set.user.create',
+}
+
 // ---- GET METHOD MODELS ----
+export interface MethodGetUsersAllEmailsModel {
+    userIds: string[];
+}
+
+export interface MethodGetUsersAllEmailsResponseModel {
+    users: Pick<UserModel, '_id' | 'emails'>[];
+}
 
 // ---- SET METHOD MODELS ----
 export interface MethodSetUserCreateModel {

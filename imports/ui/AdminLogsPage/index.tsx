@@ -1,32 +1,26 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { capitalizeFirstLetter, checkStrEmpty, formatToHumanDate } from '@netsu/js-utils';
+import { capitalizeFirstLetter, formatToHumanDate } from '@netsu/js-utils';
 import { Button, Checkbox, Descriptions, Drawer, Input, List, Select, Space, Typography } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState } from 'react';
-import SystemChangeLogsModel from '/imports/api/systemChangeLogs/models';
-import { UserModel } from '/imports/api/users/models';
-import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '/imports/api/utils/models';
-import { MongoDBSelector } from '/imports/types/interfaces';
+import SystemChangeLogsModel, {
+    AvailableSystemChangeLogMethods,
+    AvailableSystemLogsSearchOptions,
+    MethodGetSystemChangeLogsSearchModel,
+    ResultGetSystemChangeLogsSearchModel,
+} from '/imports/api/systemChangeLogs/models';
+import {
+    AvailableUserMethods,
+    MethodGetUsersAllEmailsModel,
+    MethodGetUsersAllEmailsResponseModel,
+    UserModel,
+} from '/imports/api/users/models';
 import { errorResponse } from '/imports/utils/errors';
 import { getUserEmail } from '/imports/utils/meteor';
 
 interface MiniAdminLogsPageUserModel extends Pick<UserModel, '_id' | 'emails'> {}
 
-const miniAdminLogsPageUserFields = {
-    _id: 1,
-    emails: 1,
-};
-
-enum AvailableSystemLogsSearchOptions {
-    SUBJECT = 'subject',
-    NOTE = 'note',
-    UPDATE = 'update',
-    ALL = 'all',
-}
-
-interface AdminLogsPageProps {}
-
-const AdminLogsPage: React.FC<AdminLogsPageProps> = () => {
+const AdminLogsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [systemLogs, setSystemLogs] = useState<SystemChangeLogsModel[]>([]);
     const [allSystemLogsCount, setAllSystemLogsCount] = useState(0);
@@ -43,23 +37,18 @@ const AdminLogsPage: React.FC<AdminLogsPageProps> = () => {
     const refreshUsers = async (userIds: string[]): Promise<MiniAdminLogsPageUserModel[]> => {
         setLoadingUsers(true);
         try {
-            const findData: MethodUtilMethodsFindCollectionModel = {
-                collection: AvailableCollectionNames.USERS,
-                selector: {
-                    _id: {
-                        $in: userIds,
-                    },
-                },
-                options: {
-                    fields: miniAdminLogsPageUserFields,
-                },
+            const data: MethodGetUsersAllEmailsModel = {
+                userIds,
             };
 
-            const res: MiniAdminLogsPageUserModel[] = await Meteor.callAsync('utilMethods.findCollection', findData);
+            const res: MethodGetUsersAllEmailsResponseModel = await Meteor.callAsync(
+                AvailableUserMethods.GET_ALL_EMAILS,
+                data,
+            );
 
-            setUsers(res);
+            setUsers(res.users);
 
-            return res;
+            return res.users;
         } catch (error) {
             errorResponse(error as Meteor.Error, 'Could not get users');
         } finally {
@@ -70,81 +59,29 @@ const AdminLogsPage: React.FC<AdminLogsPageProps> = () => {
     };
 
     const refreshSystemLogs = async (skip = 0, limit = 100): Promise<SystemChangeLogsModel[]> => {
-        let currentLogs: SystemChangeLogsModel[] = [];
         try {
-            const regex = new RegExp(search, 'ig');
-
-            const orValue = [];
-
-            switch (focusSearchParameter) {
-                case AvailableSystemLogsSearchOptions.SUBJECT:
-                    orValue.push({
-                        subject: strictSearch ? search : { $regex: regex },
-                    });
-                    break;
-                case AvailableSystemLogsSearchOptions.NOTE:
-                    orValue.push({
-                        note: strictSearch ? search : { $regex: regex },
-                    });
-                    break;
-                case AvailableSystemLogsSearchOptions.UPDATE:
-                    orValue.push({
-                        update: strictSearch ? search : { $regex: regex },
-                    });
-                    break;
-                case AvailableSystemLogsSearchOptions.ALL:
-                    orValue.push(
-                        {
-                            subject: strictSearch ? search : { $regex: regex },
-                        },
-                        {
-                            note: strictSearch ? search : { $regex: regex },
-                        },
-                        {
-                            update: strictSearch ? search : { $regex: regex },
-                        },
-                    );
-                    break;
-                default:
-                    break;
-            }
-
-            let selector: MongoDBSelector = {};
-
-            if (!checkStrEmpty(search)) {
-                selector = {
-                    $or: orValue,
-                };
-            }
-
-            const findData: MethodUtilMethodsFindCollectionModel = {
-                collection: AvailableCollectionNames.SYSTEM_CHANGE_LOGS,
-                selector,
-                options: {
-                    limit,
-                    skip: (skip > 0 ? skip - 1 : skip) * limit,
-                    sort: { createdAt: -1 },
-                },
+            const data: MethodGetSystemChangeLogsSearchModel = {
+                filter: focusSearchParameter,
+                limit,
+                search,
+                skip,
+                strict: strictSearch,
             };
 
-            currentLogs = await Meteor.callAsync('utilMethods.findCollection', findData);
+            const res: ResultGetSystemChangeLogsSearchModel = await Meteor.callAsync(
+                AvailableSystemChangeLogMethods.GET_SEARCH,
+                data,
+            );
 
-            setSystemLogs(currentLogs);
+            setSystemLogs(res.logs);
+            setAllSystemLogsCount(res.total);
 
-            const findDataCount: MethodUtilMethodsFindCollectionModel = {
-                collection: AvailableCollectionNames.SYSTEM_CHANGE_LOGS,
-                selector,
-                count: true,
-            };
-
-            const count: number = await Meteor.callAsync('utilMethods.findCollection', findDataCount);
-            setAllSystemLogsCount(count);
+            return res.logs;
         } catch (error) {
-            errorResponse(error as Meteor.Error, 'Could not get users');
-            return [];
+            errorResponse(error as Meteor.Error, 'Could not get logs');
         }
 
-        return currentLogs;
+        return [];
     };
 
     const fetchData = async (silent = false) => {

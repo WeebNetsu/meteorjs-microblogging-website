@@ -1,9 +1,10 @@
 import { checkStrEmpty } from '@netsu/js-utils';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { MethodGetRolesUserRolesModel, ResultGetRolesUserRolesModel } from '../../roles/models';
+import { AvailableRolesMethods, MethodGetRolesUserRolesModel, ResultGetRolesUserRolesModel } from '../../roles/models';
 import { createNewSystemLogSafe } from '../../systemChangeLogs/utils';
 import UserProfileModel, {
+    AvailableUserProfileMethods,
     MethodSetUserProfileUpdateModel,
     MethodSetUserProfileUpdateProfilePhotoModel,
 } from '../models';
@@ -14,7 +15,7 @@ import { clientContentError, noAuthError, notFoundError } from '/imports/utils/s
 import { currentUserAsync, getUserByIdAsync } from '/server/utils/meteor';
 
 Meteor.methods({
-    'set.userProfile.update': async ({ update, userId }: MethodSetUserProfileUpdateModel) => {
+    [AvailableUserProfileMethods.SET_UPDATE]: async ({ update, userId }: MethodSetUserProfileUpdateModel) => {
         check(userId, String);
         check(update, Object);
 
@@ -68,7 +69,7 @@ Meteor.methods({
             };
 
             const currentUserRole: ResultGetRolesUserRolesModel = await Meteor.callAsync(
-                'get.roles.userRoles',
+                AvailableRolesMethods.GET_USER_ROLES,
                 currentUserRoleData,
             );
 
@@ -97,11 +98,14 @@ Meteor.methods({
                 $set: newUpdate,
             })}
             );`,
-            method: 'set.userProfile.update',
+            method: AvailableUserProfileMethods.SET_UPDATE,
             previousState: originalState,
         });
     },
-    'set.userProfile.updateProfilePhoto': async ({ key, userId }: MethodSetUserProfileUpdateProfilePhotoModel) => {
+    [AvailableUserProfileMethods.SET_UPDATE_PROFILE_PHOTO]: async ({
+        key,
+        userId,
+    }: MethodSetUserProfileUpdateProfilePhotoModel) => {
         check(userId, String);
         check(key, String);
 
@@ -114,7 +118,7 @@ Meteor.methods({
             };
 
             const currentUserRole: ResultGetRolesUserRolesModel = await Meteor.callAsync(
-                'get.roles.userRoles',
+                AvailableRolesMethods.GET_USER_ROLES,
                 currentUserRoleData,
             );
 
@@ -150,7 +154,7 @@ Meteor.methods({
                 },
             })}
             );`,
-            method: 'set.userProfile.updateProfilePhoto',
+            method: AvailableUserProfileMethods.SET_UPDATE_PROFILE_PHOTO,
         });
     },
 });

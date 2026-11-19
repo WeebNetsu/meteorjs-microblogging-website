@@ -5,29 +5,14 @@ import React, { useEffect, useState } from 'react';
 import { BasicSiteProps } from '../App';
 import CreatePost from '../components/CreatePost';
 import PostCard from './components/PostCard';
-import PostModel from '/imports/api/post/models';
+import PostModel, { AvailablePostMethods, ResultGetPostsLatestModel } from '/imports/api/post/models';
 import UserProfileModel from '/imports/api/userProfile/models';
-import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '/imports/api/utils/models';
 import { errorResponse } from '/imports/utils/errors';
 
 export interface MiniBrowsePagePostModel extends Pick<PostModel, '_id' | 'createdAt' | 'text' | 'userId'> {}
 
-const miniBrowsePagePostFields = {
-    _id: 1,
-    createdAt: 1,
-    text: 1,
-    userId: 1,
-};
-
 export interface MiniBrowsePageUserProfileModel
     extends Pick<UserProfileModel, '_id' | 'username' | 'userId' | 'photo'> {}
-
-const miniBrowsePageUserProfileFields = {
-    _id: 1,
-    username: 1,
-    userId: 1,
-    photo: 1,
-};
 
 interface BrowsePageProps extends BasicSiteProps {}
 
@@ -45,65 +30,23 @@ const BrowsePage: React.FC<BrowsePageProps> = ({ userId, userRoles }) => {
      */
     const [userProfiles, setUserProfiles] = useState<MiniBrowsePageUserProfileModel[]>([]);
 
-    const fetchPosts = async (skip = 0, limit = 10) => {
+    const fetchPosts = async () => {
         try {
-            const findData: MethodUtilMethodsFindCollectionModel = {
-                collection: AvailableCollectionNames.POSTS,
-                selector: {},
-                options: {
-                    fields: miniBrowsePagePostFields,
-                    limit,
-                    skip: (skip > 0 ? skip - 1 : skip) * limit,
-                    sort: { createdAt: -1 },
-                },
-            };
+            const res: ResultGetPostsLatestModel = await Meteor.callAsync(
+                AvailablePostMethods.GET_LATEST_WITH_USER_PROFILES,
+            );
 
-            const res: MiniBrowsePagePostModel[] = await Meteor.callAsync('utilMethods.findCollection', findData);
-
-            setPosts(res);
-
-            return res;
+            setPosts(res.posts);
+            setUserProfiles(res.users);
         } catch (error) {
             errorResponse(error as Meteor.Error, 'Could not get posts');
         }
-
-        return [];
-    };
-
-    const fetchPostUsers = async (userIds: string[]) => {
-        try {
-            const findData: MethodUtilMethodsFindCollectionModel = {
-                collection: AvailableCollectionNames.USER_PROFILE,
-                selector: {
-                    userId: {
-                        $in: userIds,
-                    },
-                },
-                options: {
-                    fields: miniBrowsePageUserProfileFields,
-                },
-            };
-
-            const res: MiniBrowsePageUserProfileModel[] = await Meteor.callAsync(
-                'utilMethods.findCollection',
-                findData,
-            );
-
-            setUserProfiles(res);
-
-            return res;
-        } catch (error) {
-            errorResponse(error as Meteor.Error, 'Could not get users');
-        }
-
-        return [];
     };
 
     const fetchData = async (silent?: boolean) => {
         setLoading(!silent);
 
-        const postRes = await fetchPosts();
-        await fetchPostUsers(postRes.map((p) => p.userId));
+        await fetchPosts();
 
         setLoading(false);
     };

@@ -4,22 +4,22 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { useEffect, useState } from 'react';
 import { Route, Switch } from 'wouter';
-import { MethodGetAWSFileFromS3Model } from '../api/aws/models';
-import { AvailableUserRoles, MethodGetRolesUserRolesModel, ResultGetRolesUserRolesModel } from '../api/roles/models';
-import UserProfileModel from '../api/userProfile/models';
-import { AvailableCollectionNames, MethodUtilMethodsFindCollectionModel } from '../api/utils/models';
+import { AvailableAwsMethods, MethodGetAWSFileFromS3Model } from '../api/aws/models';
+import {
+    AvailableRolesMethods,
+    AvailableUserRoles,
+    MethodGetRolesUserRolesModel,
+    ResultGetRolesUserRolesModel,
+} from '../api/roles/models';
+import UserProfileModel, {
+    AvailableUserProfileMethods,
+    MethodGetUserProfilesPublicDataModel,
+    ResultGetUserProfilesPublicDataResponseModel,
+} from '../api/userProfile/models';
 import { ComponentProps } from '../types/interfaces';
 import { adminRoutes, protectedRoutes, publicRoutes } from '../utils/constants/routes';
 import { errorResponse } from '../utils/errors';
 import RouteRenderer from './components/RouteRenderer';
-
-export interface MiniAppUserProfileModel extends Pick<UserProfileModel, '_id' | 'username' | 'photo'> {}
-
-const miniAppUserProfileFields = {
-    _id: 1,
-    username: 1,
-    photo: 1,
-};
 
 /**
  * Defines the type for a userId on login
@@ -32,7 +32,7 @@ export type AppUserIdModel = string | undefined | null;
 
 export interface BasicSiteProps extends ComponentProps {
     userId?: string;
-    userProfile?: MiniAppUserProfileModel;
+    userProfile?: Pick<UserProfileModel, '_id' | 'username' | 'photo' | 'firstName' | 'lastName'>;
     userRoles?: AvailableUserRoles[];
     profilePhoto?: string | undefined;
 }
@@ -42,7 +42,9 @@ const App: React.FC = () => {
     /**
      * Basic public profile data that is required by most pages (reduces fetch requests)
      */
-    const [userProfile, setUserProfile] = useState<MiniAppUserProfileModel | undefined>();
+    const [userProfile, setUserProfile] = useState<
+        Pick<UserProfileModel, '_id' | 'username' | 'photo' | 'firstName' | 'lastName'> | undefined
+    >();
     const [loading, setLoading] = useState(true);
     const [userRoles, setUserRoles] = useState<AvailableUserRoles[]>([]);
     const [profilePhoto, setProfilePhoto] = useState<string | undefined>();
@@ -55,7 +57,10 @@ const App: React.FC = () => {
                 userIds: [userId],
             };
 
-            const res: ResultGetRolesUserRolesModel = await Meteor.callAsync('get.roles.userRoles', findData);
+            const res: ResultGetRolesUserRolesModel = await Meteor.callAsync(
+                AvailableRolesMethods.GET_USER_ROLES,
+                findData,
+            );
 
             setUserRoles(res.result.find((r) => r.userId === userId)?.roles ?? []);
 
@@ -71,25 +76,16 @@ const App: React.FC = () => {
         if (!userId) return;
 
         try {
-            const findData: MethodUtilMethodsFindCollectionModel = {
-                collection: AvailableCollectionNames.USER_PROFILE,
-                selector: {
-                    userId,
-                },
-                options: {
-                    fields: miniAppUserProfileFields,
-                },
-                onlyOne: true,
-            };
+            const data: MethodGetUserProfilesPublicDataModel = {};
 
-            const res: MiniAppUserProfileModel | undefined = await Meteor.callAsync(
-                'utilMethods.findCollection',
-                findData,
+            const res: ResultGetUserProfilesPublicDataResponseModel = await Meteor.callAsync(
+                AvailableUserProfileMethods.GET_PUBLIC_DATA,
+                data,
             );
 
-            setUserProfile(res);
+            setUserProfile(res.user);
 
-            return res;
+            return res.user;
         } catch (error) {
             errorResponse(error as Meteor.Error, 'Could not get users');
         }
@@ -103,7 +99,7 @@ const App: React.FC = () => {
                 key: key,
             };
 
-            const res: string | undefined = await Meteor.callAsync('get.aws.fileFromS3', data);
+            const res: string | undefined = await Meteor.callAsync(AvailableAwsMethods.GET_FILE_FROM_S3, data);
 
             setProfilePhoto(res);
         } catch (error) {

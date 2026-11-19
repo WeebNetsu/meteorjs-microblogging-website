@@ -14,6 +14,13 @@ interface RoleModel {
 
 export default RoleModel;
 
+// ---- METHODS ----
+export enum AvailableRolesMethods {
+    // GET
+    GET_USER_ROLES = 'get.roles.userRoles',
+    GET_HAS_ADMIN_ROLE = 'get.roles.hasAdminRole',
+}
+
 // ---- GET METHOD MODELS ----
 export interface UserLinkedRoleModel {
     userId: string;
@@ -26,6 +33,10 @@ export interface MethodGetRolesUserRolesModel {
 
 export interface ResultGetRolesUserRolesModel {
     result: UserLinkedRoleModel[];
+}
+
+export interface ResultGetRolesHasAdminRoleModel {
+    admin: boolean;
 }
 
 // ---- SET METHOD MODELS ----
