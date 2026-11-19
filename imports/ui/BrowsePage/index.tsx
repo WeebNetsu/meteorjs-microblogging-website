@@ -5,14 +5,13 @@ import React, { useEffect, useState } from 'react';
 import CreatePost from '../components/CreatePost';
 import { useUserContext } from '../components/SiteContextProvider';
 import PostCard from './components/PostCard';
-import PostModel, { AvailablePostMethods, ResultGetPostsLatestModel } from '/imports/api/post/models';
-import UserProfileModel from '/imports/api/userProfile/models';
+import {
+    AvailablePostMethods,
+    MiniGetPostsLatestPostModel,
+    MiniGetPostsLatestUserProfileModel,
+    ResultGetPostsLatestModel,
+} from '/imports/api/post/models';
 import { errorResponse } from '/imports/utils/errors';
-
-export interface MiniBrowsePagePostModel extends Pick<PostModel, '_id' | 'createdAt' | 'text' | 'userId'> {}
-
-export interface MiniBrowsePageUserProfileModel
-    extends Pick<UserProfileModel, '_id' | 'username' | 'userId' | 'photo'> {}
 
 /**
  * This is the general way all fetch data's are defined
@@ -24,11 +23,11 @@ const BrowsePage: React.FC = () => {
 
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [posts, setPosts] = useState<MiniBrowsePagePostModel[]>([]);
+    const [posts, setPosts] = useState<MiniGetPostsLatestPostModel[]>([]);
     /**
      * Note user profiles are filtered based on posts
      */
-    const [userProfiles, setUserProfiles] = useState<MiniBrowsePageUserProfileModel[]>([]);
+    const [userProfiles, setUserProfiles] = useState<MiniGetPostsLatestUserProfileModel[]>([]);
 
     const fetchPosts = async () => {
         try {

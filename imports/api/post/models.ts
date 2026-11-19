@@ -26,9 +26,12 @@ export enum AvailablePostMethods {
 
 // ---- GET METHOD MODELS ----
 
+export type MiniGetPostsLatestPostModel = Pick<PostModel, '_id' | 'createdAt' | 'text' | 'userId'>;
+export type MiniGetPostsLatestUserProfileModel = Pick<UserProfileModel, '_id' | 'username' | 'userId' | 'photo'>;
+
 export interface ResultGetPostsLatestModel {
-    posts: Pick<PostModel, '_id' | 'createdAt' | 'text' | 'userId'>[];
-    users: Pick<UserProfileModel, '_id' | 'username' | 'userId' | 'photo'>[];
+    posts: MiniGetPostsLatestPostModel[];
+    users: MiniGetPostsLatestUserProfileModel[];
 }
 
 // ---- SET METHOD MODELS ----

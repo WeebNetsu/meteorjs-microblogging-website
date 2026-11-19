@@ -46,8 +46,13 @@ export interface MethodGetUserProfilesPublicDataModel {
     username?: string;
 }
 
+export type MiniGetUserProfilesPublicDataResponseUserProfileModel = Pick<
+    UserProfileModel,
+    '_id' | 'username' | 'photo' | 'firstName' | 'lastName' | 'userId'
+>;
+
 export interface ResultGetUserProfilesPublicDataResponseModel {
-    user: Pick<UserProfileModel, '_id' | 'username' | 'photo' | 'firstName' | 'lastName' | 'userId'>;
+    user: MiniGetUserProfilesPublicDataResponseUserProfileModel;
 }
 
 // ---- SET METHOD MODELS ----

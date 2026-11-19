@@ -23,7 +23,7 @@ import { errorResponse } from '/imports/utils/errors';
  * undefined - loading data
  * string - logged in (user id)
  */
-type UserContextUserIdModel = string | undefined | null;
+export type UserContextUserIdModel = string | undefined | null;
 
 type UserContextUserProfileModel = Pick<UserProfileModel, '_id' | 'username' | 'photo' | 'firstName' | 'lastName'>;
 

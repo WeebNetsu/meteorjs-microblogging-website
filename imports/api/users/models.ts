@@ -36,8 +36,10 @@ export interface MethodGetUsersAllEmailsModel {
     userIds: string[];
 }
 
+export type MiniGetUsersAllEmailsResponseUserModel = Pick<UserModel, '_id' | 'emails'>;
+
 export interface MethodGetUsersAllEmailsResponseModel {
-    users: Pick<UserModel, '_id' | 'emails'>[];
+    users: MiniGetUsersAllEmailsResponseUserModel[];
 }
 
 // ---- SET METHOD MODELS ----

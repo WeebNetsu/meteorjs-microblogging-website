@@ -13,12 +13,10 @@ import {
     AvailableUserMethods,
     MethodGetUsersAllEmailsModel,
     MethodGetUsersAllEmailsResponseModel,
-    UserModel,
+    MiniGetUsersAllEmailsResponseUserModel,
 } from '/imports/api/users/models';
 import { errorResponse } from '/imports/utils/errors';
 import { getUserEmail } from '/imports/utils/meteor';
-
-interface MiniAdminLogsPageUserModel extends Pick<UserModel, '_id' | 'emails'> {}
 
 const AdminLogsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
@@ -31,10 +29,10 @@ const AdminLogsPage: React.FC = () => {
         AvailableSystemLogsSearchOptions.ALL,
     );
     const [strictSearch, setStrictSearch] = useState(false);
-    const [users, setUsers] = useState<MiniAdminLogsPageUserModel[]>([]);
+    const [users, setUsers] = useState<MiniGetUsersAllEmailsResponseUserModel[]>([]);
     const [loadingUsers, setLoadingUsers] = useState(true);
 
-    const refreshUsers = async (userIds: string[]): Promise<MiniAdminLogsPageUserModel[]> => {
+    const refreshUsers = async (userIds: string[]): Promise<MiniGetUsersAllEmailsResponseUserModel[]> => {
         setLoadingUsers(true);
         try {
             const data: MethodGetUsersAllEmailsModel = {

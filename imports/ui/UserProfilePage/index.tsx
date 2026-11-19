@@ -14,11 +14,12 @@ import {
     MethodSetAwsDeleteFileModel,
     MethodSetAwsUploadFileModel,
 } from '/imports/api/aws/models';
-import UserProfileModel, {
+import {
     AvailableUserProfileMethods,
     MethodGetUserProfilesPublicDataModel,
     MethodSetUserProfileUpdateModel,
     MethodSetUserProfileUpdateProfilePhotoModel,
+    MiniGetUserProfilesPublicDataResponseUserProfileModel,
     ResultGetUserProfilesPublicDataResponseModel,
 } from '/imports/api/userProfile/models';
 import { encodeImageFileAsURL } from '/imports/utils';
@@ -26,18 +27,13 @@ import { isModerator } from '/imports/utils/checks';
 import { publicRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
 
-// mention it is good planning to not fetch sensitive data such as first name and last name unless
-// the user is allowed to see them
-interface MiniUserProfilePageUserProfileModel
-    extends Pick<UserProfileModel, '_id' | 'userId' | 'firstName' | 'lastName' | 'photo'> {}
-
 const UserProfilePage: React.FC = () => {
     const { userId, userRoles } = useUserContext();
     const { username } = useParams();
     const [location, navigate] = useLocation();
 
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<MiniUserProfilePageUserProfileModel | undefined>();
+    const [user, setUser] = useState<MiniGetUserProfilesPublicDataResponseUserProfileModel | undefined>();
     const [profilePhoto, setProfilePhoto] = useState<string | undefined>();
 
     const fetchProfilePhoto = async (key: string) => {

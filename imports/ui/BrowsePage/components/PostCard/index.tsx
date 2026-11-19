@@ -6,9 +6,14 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
-import { FetchDataType, MiniBrowsePagePostModel, MiniBrowsePageUserProfileModel } from '../..';
+import { FetchDataType } from '../..';
 import { AvailableAwsMethods, MethodGetAWSFileFromS3Model } from '/imports/api/aws/models';
-import { AvailablePostMethods, MethodSetPostDeleteModel } from '/imports/api/post/models';
+import {
+    AvailablePostMethods,
+    MethodSetPostDeleteModel,
+    MiniGetPostsLatestPostModel,
+    MiniGetPostsLatestUserProfileModel,
+} from '/imports/api/post/models';
 import PostLikeModel, {
     AvailablePostLikeMethods,
     MethodPublishPostLikeTotalLikesModel,
@@ -17,14 +22,14 @@ import PostLikeModel, {
 } from '/imports/api/postLike/models';
 import PostLikeCollection from '/imports/api/postLike/postLike';
 import { AvailableUserRoles } from '/imports/api/roles/models';
-import { AppUserIdModel } from '/imports/ui/App';
+import { UserContextUserIdModel } from '/imports/ui/components/SiteContextProvider';
 import { publicRoutes } from '/imports/utils/constants/routes';
 import { errorResponse } from '/imports/utils/errors';
 
 interface PostCardProps {
-    post: MiniBrowsePagePostModel;
-    userId?: AppUserIdModel;
-    postUser: MiniBrowsePageUserProfileModel;
+    post: MiniGetPostsLatestPostModel;
+    userId?: UserContextUserIdModel;
+    postUser: MiniGetPostsLatestUserProfileModel;
     userRoles: AvailableUserRoles[] | undefined;
     fetchParentData: FetchDataType;
 }
