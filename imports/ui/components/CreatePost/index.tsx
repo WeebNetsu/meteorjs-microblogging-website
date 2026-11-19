@@ -1,5 +1,5 @@
 import { CloseOutlined } from '@ant-design/icons';
-import { checkStrEmpty } from '@netsu/js-utils';
+import { isNonEmptyStr } from '@netsu/js-utils';
 import { Button, Flex, Input, message, Space } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
@@ -20,7 +20,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ fetchParentData, show, setShow 
     if (!show) return <></>;
 
     const handleSubmitPost = async () => {
-        if (checkStrEmpty(postText)) return message.error('Post text is required');
+        if (!isNonEmptyStr(postText)) return message.error('Post text is required');
         const cleanedText = postText.trim();
         if (cleanedText.length > MAX_POST_LENGTH) return message.error('Post text is too long');
 

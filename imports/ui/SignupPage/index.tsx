@@ -1,4 +1,4 @@
-import { checkStrEmpty, emailRegex } from '@netsu/js-utils';
+import { emailRegex, isNonEmptyStr } from '@netsu/js-utils';
 import { Button, Input, message, Space, Typography } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
@@ -35,7 +35,7 @@ const SignupPage: React.FC = () => {
             return message.error('Username is too short');
         }
 
-        if (checkStrEmpty(cleanedFirstName)) {
+        if (!isNonEmptyStr(cleanedFirstName)) {
             return message.error('First name is required');
         }
 

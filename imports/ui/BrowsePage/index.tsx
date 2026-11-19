@@ -2,8 +2,8 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Space } from 'antd';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState } from 'react';
-import { BasicSiteProps } from '../App';
 import CreatePost from '../components/CreatePost';
+import { useUserContext } from '../components/SiteContextProvider';
 import PostCard from './components/PostCard';
 import PostModel, { AvailablePostMethods, ResultGetPostsLatestModel } from '/imports/api/post/models';
 import UserProfileModel from '/imports/api/userProfile/models';
@@ -14,14 +14,14 @@ export interface MiniBrowsePagePostModel extends Pick<PostModel, '_id' | 'create
 export interface MiniBrowsePageUserProfileModel
     extends Pick<UserProfileModel, '_id' | 'username' | 'userId' | 'photo'> {}
 
-interface BrowsePageProps extends BasicSiteProps {}
-
 /**
  * This is the general way all fetch data's are defined
  */
 export type FetchDataType = (silent?: boolean) => Promise<void>;
 
-const BrowsePage: React.FC<BrowsePageProps> = ({ userId, userRoles }) => {
+const BrowsePage: React.FC = () => {
+    const { userId, userRoles } = useUserContext();
+
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [loading, setLoading] = useState(true);
     const [posts, setPosts] = useState<MiniBrowsePagePostModel[]>([]);

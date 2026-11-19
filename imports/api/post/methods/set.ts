@@ -1,4 +1,4 @@
-import { checkStrEmpty, limitText } from '@netsu/js-utils';
+import { isNonEmptyStr, limitText } from '@netsu/js-utils';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { createNewSystemLogSafe } from '../../systemChangeLogs/utils';
@@ -13,7 +13,7 @@ Meteor.methods({
     [AvailablePostMethods.SET_CREATE]: async ({ text }: MethodSetPostCreateModel) => {
         check(text, String);
 
-        if (checkStrEmpty(text)) return clientContentError('Post text is required');
+        if (!isNonEmptyStr(text)) return clientContentError('Post text is required');
         const cleanedText = text.trim();
         if (cleanedText.length > MAX_POST_LENGTH) return clientContentError('Post text is too long');
 

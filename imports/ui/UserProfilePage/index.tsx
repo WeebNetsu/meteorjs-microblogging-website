@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'wouter';
-import { BasicSiteProps } from '../App';
+import { useUserContext } from '../components/SiteContextProvider';
 import NotFoundPage from '../NotFoundPage';
 import {
     AvailableAwsMethods,
@@ -31,17 +31,8 @@ import { errorResponse } from '/imports/utils/errors';
 interface MiniUserProfilePageUserProfileModel
     extends Pick<UserProfileModel, '_id' | 'userId' | 'firstName' | 'lastName' | 'photo'> {}
 
-const miniUserProfilePageUserProfileFields = {
-    _id: 1,
-    userId: 1,
-    firstName: 1,
-    lastName: 1,
-    photo: 1,
-};
-
-interface UserProfilePageProps extends BasicSiteProps {}
-
-const UserProfilePage: React.FC<UserProfilePageProps> = ({ userId, userRoles }) => {
+const UserProfilePage: React.FC = () => {
+    const { userId, userRoles } = useUserContext();
     const { username } = useParams();
     const [location, navigate] = useLocation();
 

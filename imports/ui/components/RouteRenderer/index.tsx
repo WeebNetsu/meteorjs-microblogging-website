@@ -6,19 +6,22 @@ import { MenuItemType } from 'antd/es/menu/interface';
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { useLocation } from 'wouter';
-import { BasicSiteProps } from '../../App';
+import { useUserContext } from '../SiteContextProvider';
 import { AvailableUserRoles } from '/imports/api/roles/models';
 import { SITE_NAME } from '/imports/utils/constants';
 import { adminRoutes, publicRoutes } from '/imports/utils/constants/routes';
 
-interface RouteRendererProps extends BasicSiteProps {}
+interface RouteRendererProps {
+    children: React.ReactNode;
+}
 
 interface RouteRenderMenuItem extends MenuItemType {
     label: string | React.JSX.Element;
 }
 
-const RouteRenderer: React.FC<RouteRendererProps> = ({ children, userId, userProfile, userRoles, profilePhoto }) => {
+const RouteRenderer: React.FC<RouteRendererProps> = ({ children }) => {
     const [location, navigate] = useLocation();
+    const { userId, userProfile, userRoles, profilePhoto } = useUserContext();
 
     const items: (RouteRenderMenuItem | undefined)[] = [
         {

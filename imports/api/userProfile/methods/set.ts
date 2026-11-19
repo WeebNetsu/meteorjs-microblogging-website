@@ -1,4 +1,4 @@
-import { checkStrEmpty } from '@netsu/js-utils';
+import { isNonEmptyStr } from '@netsu/js-utils';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { AvailableRolesMethods, MethodGetRolesUserRolesModel, ResultGetRolesUserRolesModel } from '../../roles/models';
@@ -50,7 +50,7 @@ Meteor.methods({
             if (existingUser) return clientContentError('Username is already taken');
         }
 
-        if (cleanedFirstName && checkStrEmpty(cleanedFirstName)) {
+        if (cleanedFirstName && !isNonEmptyStr(cleanedFirstName)) {
             return clientContentError('First name is required');
         }
 
