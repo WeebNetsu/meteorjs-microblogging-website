@@ -8,6 +8,20 @@ import { UserModel } from '/imports/api/users/models';
 import '/imports/startup/imports';
 
 Meteor.startup(async () => {
+    console.log('Checking Settings JSON for missing keys');
+
+    if (
+        !Meteor.settings.S3Region ||
+        !Meteor.settings.S3Bucket ||
+        !Meteor.settings.S3Endpoint ||
+        !Meteor.settings.S3AccessKeyId ||
+        !Meteor.settings.S3SecretAccessKey
+    ) {
+        console.log('[WARNING] Missing some S3 credentials. Some features may not be available');
+    }
+
+    console.log('[DONE] Checking Settings JSON for missing keys');
+
     console.log('Creating collection indexes');
     PostLikeCollection.rawCollection().createIndex({ postId: 1, userId: 1 });
     console.log('[DONE] Creating collection indexes');

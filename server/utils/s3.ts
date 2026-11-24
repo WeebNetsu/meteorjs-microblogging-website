@@ -3,10 +3,11 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Meteor } from 'meteor/meteor';
 
 const s3 = new S3Client({
-    region: Meteor.settings.public.AWSRegion,
+    region: Meteor.settings.S3Region as string,
+    endpoint: Meteor.settings.S3Endpoint as string,
     credentials: {
-        accessKeyId: Meteor.settings.AWSAccessKeyId,
-        secretAccessKey: Meteor.settings.AWSSecretAccessKey,
+        accessKeyId: Meteor.settings.S3AccessKeyId as string,
+        secretAccessKey: Meteor.settings.S3SecretAccessKey as string,
     },
 });
 
@@ -19,11 +20,20 @@ const s3 = new S3Client({
  * @NOTE SERVER ONLY
  */
 export const uploadFileToS3 = async (key: string, buffer: string, contentType: string) => {
-    const base64String = buffer.split(',')[1]; // Extract the base64-encoded portion
+    const base64String = buffer.split(',').at(1); // Extract the base64-encoded portion
+
+    if (!base64String) {
+        throw new Meteor.Error(
+            500,
+            'Could not upload file to s3',
+            'Splitting buffer failed with no value returned at index',
+        );
+    }
+
     const res = Buffer.from(base64String, 'base64');
 
     const params = {
-        Bucket: Meteor.settings.public.AWSBucket,
+        Bucket: Meteor.settings.S3Bucket as string,
         Key: key,
         Body: res,
         ContentType: contentType,
@@ -44,7 +54,7 @@ export const uploadFileToS3 = async (key: string, buffer: string, contentType: s
  */
 export const deleteFileFromS3 = async (key: string) => {
     const params = {
-        Bucket: Meteor.settings.public.AWSBucket,
+        Bucket: Meteor.settings.S3Bucket as string,
         Key: key,
     };
 
@@ -64,7 +74,7 @@ export const deleteFileFromS3 = async (key: string) => {
  */
 export const downloadFileFromS3 = async (key: string) => {
     const params = {
-        Bucket: Meteor.settings.public.AWSBucket,
+        Bucket: Meteor.settings.S3Bucket as string,
         Key: key,
     };
 

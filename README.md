@@ -7,12 +7,13 @@ This will become my Meteor.js course.
 ```json
 {
     "public": {
-        "AWSRegion": "af-south-1",
-        "AWSBucket": "myapp",
         "version": "0.6.0"
     },
-    "AWSAccessKeyId": "xxx",
-    "AWSSecretAccessKey": "xxx"
+    "S3Region": "af-south-1",
+    "S3Bucket": "myapp",
+    "S3Endpoint": "https://xxx.r2.cloudflarestorage.com",
+    "S3AccessKeyId": "xxx",
+    "S3SecretAccessKey": "xxx"
 }
 ```
 
