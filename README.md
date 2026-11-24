@@ -36,6 +36,17 @@ What needs to be covered
 - [ ] Deploying Galaxy
 - [ ] Deploying to AWS with MUP
 
+<!--
+Hey! If you're reading this, then you're probably having trouble getting your s3 credentials
+
+1. Create new R2 Bucket on Cloudflare
+2. DO NOT be fooled by S3 API url under settings, that is not the endpoint url
+3. Set region as auto in settings json
+4. Set bucket name in settings json
+5. Go to manage api tokens (under r2 objects) and create account token (object read+write on specific bucket and set the TTL to 24 hours)
+6. Copy access key id and secret and the endpoint url to settings json
+ -->
+
 Tutorials (plan: Admin Dashboard):
 
 1. What is Meteor (slideshow)
